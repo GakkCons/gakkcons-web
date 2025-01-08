@@ -1,0 +1,52 @@
+
+
+  /* Media queries for responsiveness */
+  @media (max-width: 1027px) {
+
+    .consultationmode {
+      margin: 10px !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dropdowncontainer {
+        margin: 0 !important ;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center; /* Vertically center the logo and text */
+        justify-content: center; /* Horizontally center the logo and text */
+        margin-right: 10px;
+        margin-top: 5px;
+      }
+      .dropdownlist {
+        position: absolute !important;
+        top: 120px !important;
+        left: 50%; /* Align the left edge of the dropdown to the center */
+        transform: translateX(-50%); /* Offset the element by 50% of its width to truly center it */
+        width: calc(100% - 60px) !important; /* Subtract the horizontal margin from the full width */
+        background: white;
+        z-index: 1;
+    }
+      
+      
+    .details {
+        margin-top: 60px !important ;
+        
+    }
+
+    .detail-status {
+        z-index: 0 !important;
+    }
+
+    .smallcenter {
+      text-align: center;
+    }
+
+  }
+
+  @media (max-width: 480px) {
+
+  }
+  
