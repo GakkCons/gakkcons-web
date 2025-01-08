@@ -14,6 +14,8 @@ import {
   Tooltip,
   Legend,
  } from 'chart.js';
+import axios from './plugins/axios';
+import { useQuery } from '@tanstack/react-query';
 
  // Register Chart.js components
 ChartJS.register(
@@ -27,6 +29,28 @@ ChartJS.register(
 );
 import './style.css';
 
+const fetchAnalyticsData = async (token: string) => {
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  try {
+    const response = await axios.get(
+      'appointments/get/analytics',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Corrected Authorization header format
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch analytics data');
+  }
+};
+
+
+
 
 function Report() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
@@ -34,36 +58,73 @@ function Report() {
   const [status, setStatus] = useState('');
   const [reportType, setReportType] = useState('daily'); // Toggle between daily and weekly
 
+  const token = sessionStorage.getItem('authToken');
 
-  const dailyData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'Daily Reports',
-        data: [0.1, 50, 40, 60, 70, 80, 90],
-        fill: false,
-        borderColor: '#4CAF50',
-        backgroundColor: '#4CAF50',
-        tension: 0.4,
-      },
-    ],
-  };
+// Correctly passing a function as queryFn
+const { data, error, isLoading } = useQuery({
+  queryKey: ['analytics'],  // Query key
+  queryFn: () => fetchAnalyticsData(token),  // Pass the function, not the result
+});
 
-  const weeklyData = {
-    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-    datasets: [
-      {
-        label: 'Weekly Reports',
-        data: [0.2, 400, 350, 500],
-        fill: false,
-        borderColor: '#2196F3',
-        backgroundColor: '#2196F3',
-        tension: 0.4,
-      },
-    ],
-  };
+
+
+const dailyData = {
+  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  datasets: [
+    {
+      label: 'Daily Reports',
+      data: [
+        data?.monday_appointments || 0,
+        data?.tuesday_appointments || 0,
+        data?.wednesday_appointments || 0,
+        data?.thursday_appointments || 0,
+        data?.friday_appointments || 0,
+        data?.saturday_appointments || 0,
+        data?.sunday_appointments || 0,
+      ],
+      fill: false,
+      borderColor: '#4CAF50',
+      backgroundColor: '#4CAF50',
+      tension: 0.4,
+    },
+  ],
+};
+
+const weeklyData = {
+  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+  datasets: [
+    {
+      label: 'Weekly Reports',
+      data: [
+        data?.week_1_appointments || 0,
+        data?.week_2_appointments || 0,
+        data?.week_3_appointments || 0,
+        data?.week_4_appointments || 0,
+      ],
+      fill: false,
+      borderColor: '#2196F3',
+      backgroundColor: '#2196F3',
+      tension: 0.4,
+    },
+  ],
+};
 
   
+  const yearlyData = {
+    labels: ['Year'],
+    datasets: [
+      {
+        label: 'Yearly Reports',
+        data: [data?.yearly_appointments || 0],
+        fill: false,
+        borderColor: '#FF6347',
+        backgroundColor: '#FF6347',
+        tension: 0.4,
+      },
+    ],
+  };
+
+
   const options1 = {
     responsive: true,
     plugins: {
@@ -89,6 +150,7 @@ function Report() {
     },
   };
 
+  
   const toggleExpansion = () => {
     setIsExpanded((prevState) => !prevState);
   };
@@ -164,75 +226,7 @@ function Report() {
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4">
        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
        <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{ position:  'relative' }}>
-            {/* <div
-              style={{
-                position: 'absolute',
-                width: '100%',
-                background: '#D9D9D9',
-                border: '1px solid black',
-                borderRadius: '7px',
-              }}
-            >
-              <div
-                className="flex items-center p-3 cursor-pointer"
-                onClick={toggleExpansionStatus}
-                style={{
-                  background: status === 'Available' ? '#80E38A' : status === 'Unavailable' ? '#D96C6C' : '', // Conditional background color
-                }}
-              >
-                {status === 'Available' || status === 'Unavailable' ? (
-                  <h1 className="pr-10 font-bold tracking-wider">{status}</h1>
-                ) : (
-                  <h1 className="pr-10 font-bold">Status</h1>  // This is the else condition
-                )}
-                <span style={{ position: 'absolute', right: '20px' }}>
-                  <FontAwesomeIcon
-                    icon={faChevronDown}
-                    className={`transform transition-transform ${isStatusExpanded ? 'rotate-180' : ''}`}
-                  />
-                </span>
-              </div>
-
-              {isStatusExpanded && (
-                <div>
-                  <div
-                    className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                    style={{ width: '100%' }}
-                    onClick={() => toggleStatus('Available')} // Toggle to Available
-                  >
-                    <h1 className="text-md ml-3 font-normal">Available</h1>
-                    <div
-                      className="mr-5"
-                      style={{
-                        width: '10px',
-                        height: '10px',
-                        background: '#15B31B',
-                        borderRadius: '30px',
-                        padding: '10px',
-                      }}
-                    ></div>
-                  </div>
-
-                  <div
-                    className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                    style={{ width: '100%' }}
-                    onClick={() => toggleStatus('Unavailable')} // Toggle to Unavailable
-                  >
-                    <h1 className="text-md ml-3 font-normal">Unavailable</h1>
-                    <div
-                      className="mr-5"
-                      style={{
-                        width: '10px',
-                        height: '10px',
-                        background: '#CD1616',
-                        borderRadius: '30px',
-                        padding: '10px',
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div> */}
+           
             <Navbar />
           </div>
 
@@ -273,66 +267,66 @@ function Report() {
             />
           </div>
 
-          {/* Filter Icon */}
-          <FontAwesomeIcon className="text-2xl text-black cursor-pointer" icon={faFilter} />
-        </div>
-      </div>
+            {/* Filter Icon */}
+            <FontAwesomeIcon className="text-2xl text-black cursor-pointer" icon={faFilter} />
+             </div>
+           </div>
 
 
-          <div className=' p-2 md:p-4 mb-2' style={{background: '#282726'}}>
-            <div className="flex justify-between items-center mb-2">
-              <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
-            </div>
-
-            <div
-              className="px-5 py-6"
-              style={{
-                width: '100%',
-                height: 'auto',
-                maxHeight: '100%',
-                background: '#D9D9D9',
-                borderRadius: '7px',
-              }}
-            >
-              <div className="bg-white rounded-md py-5 px-7 mb-5">
-                <div className="flex justify-between items-center">
-                  <h1 className="font-semibold tracking-wide text-xl">Daily Report</h1>
-                  <p className="text-xl text-black">
-                    <span className="font-bold mr-4">0</span>
-                    <FontAwesomeIcon icon={faUser} />
-                  </p>
-                </div>
-                {/* daily report graph */}
-                <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                  <Line data={dailyData} options={options1} />
-                </div>
+            <div className=' p-2 md:p-4 mb-2' style={{background: '#282726'}}>
+              <div className="flex justify-between items-center mb-2">
+                <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
               </div>
 
-              <div className="bg-white rounded-md py-5 px-7 mb-5">
-                <div className="flex justify-between items-center">
-                  <h1 className="font-semibold tracking-wide text-xl">Weekly Report</h1>
-                  <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
+              <div
+                className="px-5 py-6"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  maxHeight: '100%',
+                  background: '#D9D9D9',
+                  borderRadius: '7px',
+                }}
+              >
+                <div className="bg-white rounded-md py-5 px-7 mb-5">
+                  <div className="flex justify-between items-center">
+                    <h1 className="font-semibold tracking-wide text-xl">Daily Report</h1>
+                    <p className="text-xl text-black">
+                      <span className="font-bold mr-4">{data.daily_total_appointments}</span>
+                      <FontAwesomeIcon icon={faUser} />
+                    </p>
+                  </div>
+                  {/* daily report graph */}
+                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <Line data={dailyData} options={options1} />
+                  </div>
                 </div>
-                {/* weekly report graph */}
-                <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                  <Line data={weeklyData} options={options1} />
+
+                <div className="bg-white rounded-md py-5 px-7 mb-5">
+                  <div className="flex justify-between items-center">
+                    <h1 className="font-semibold tracking-wide text-xl">Weekly Report</h1>
+                    <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
+                  </div>
+                  {/* weekly report graph */}
+                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <Line data={weeklyData} options={options1} />
+                  </div>
                 </div>
-              </div>
 
 
-              <div className="bg-white rounded-md py-5 px-7">
-                <div className="flex justify-between items-center">
-                  <h1 className="font-semibold tracking-wide text-xl">Monthly Report</h1>
-                  <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
-                </div>
-                {/* monthly report graph */}
-                <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                  <Line data={weeklyData} options={options1} />
+                <div className="bg-white rounded-md py-5 px-7">
+                  <div className="flex justify-between items-center">
+                    <h1 className="font-semibold tracking-wide text-xl">Monthly Report</h1>
+                    <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
+                  </div>
+                  {/* monthly report graph */}
+                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+                    <Line data={yearlyData} options={options1} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-              </div>
 
 
         </div>
