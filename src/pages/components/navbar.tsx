@@ -97,7 +97,7 @@ const Navbar: React.FC = () => {
                       className="ml-1 mr-2"
                       alt=""
                     />
-                    <h1 className="text-lg font-bold">Report</h1>
+                    <h1 className="text-lg font-bold">Report Status</h1>
                   </div>
                 </Link>
               </li>

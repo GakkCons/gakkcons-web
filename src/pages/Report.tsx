@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LogoSmall from '../assets/images/logosmall.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChartSimple, faChevronDown, faFilter, faMagnifyingGlass, faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +16,7 @@ import {
  } from 'chart.js';
 import axios from './plugins/axios';
 import { useQuery } from '@tanstack/react-query';
+import calendarIcon from '../assets/images/CRD.png'
 
  // Register Chart.js components
 ChartJS.register(
@@ -60,97 +61,35 @@ function Report() {
 
   const token = sessionStorage.getItem('authToken');
 
-// Correctly passing a function as queryFn
-const { data, error, isLoading } = useQuery({
-  queryKey: ['analytics'],  // Query key
-  queryFn: () => fetchAnalyticsData(token),  // Pass the function, not the result
-});
-
-
-
-const dailyData = {
-  labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  datasets: [
-    {
-      label: 'Daily Reports',
-      data: [
-        data?.monday_appointments || 0,
-        data?.tuesday_appointments || 0,
-        data?.wednesday_appointments || 0,
-        data?.thursday_appointments || 0,
-        data?.friday_appointments || 0,
-        data?.saturday_appointments || 0,
-        data?.sunday_appointments || 0,
-      ],
-      fill: false,
-      borderColor: '#4CAF50',
-      backgroundColor: '#4CAF50',
-      tension: 0.4,
-    },
-  ],
-};
-
-const weeklyData = {
-  labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-  datasets: [
-    {
-      label: 'Weekly Reports',
-      data: [
-        data?.week_1_appointments || 0,
-        data?.week_2_appointments || 0,
-        data?.week_3_appointments || 0,
-        data?.week_4_appointments || 0,
-      ],
-      fill: false,
-      borderColor: '#2196F3',
-      backgroundColor: '#2196F3',
-      tension: 0.4,
-    },
-  ],
-};
 
   
-  const yearlyData = {
-    labels: ['Year'],
-    datasets: [
-      {
-        label: 'Yearly Reports',
-        data: [data?.yearly_appointments || 0],
-        fill: false,
-        borderColor: '#FF6347',
-        backgroundColor: '#FF6347',
-        tension: 0.4,
-      },
-    ],
-  };
-
-
-  const options1 = {
-    responsive: true,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top',
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-      },
-      y: {
-        grid: {
-          drawBorder: false,
-        },
-        ticks: {
-          beginAtZero: true,
-        },
-      },
-    },
-  };
-
+    const { data, error, isLoading, refetch } = useQuery({
+      queryKey: ['anallytics'],
+      queryFn: () => fetchAnalyticsData(token),
+      retry: false,
+      enabled: !!token,
+    });
   
+
+    const [filteredRequests, setFilteredRequests] = useState([]);
+
+    // Effect to filter appointments if data is available
+    useEffect(() => {
+      if (data && data.appointments) {
+        setFilteredRequests(data.appointments);
+      }
+    }, [data]);
+
+    const formatTime = (time) => {
+      const [hours, minutes] = time.split(':');
+      let hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12;
+      hour = hour ? hour : 12; // the hour '0' should be '12'
+      const formattedTime = `${hour}:${minutes} ${ampm}`;
+      return formattedTime;
+    };
+
   const toggleExpansion = () => {
     setIsExpanded((prevState) => !prevState);
   };
@@ -256,7 +195,7 @@ const weeklyData = {
           {/* Search Input */}
           <div className="relative">
             <input
-              className="p-2 w-60 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
+              className="p-2 w-80 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
               type="text"
               name="search"
               placeholder="Search Instructor"
@@ -273,58 +212,97 @@ const weeklyData = {
            </div>
 
 
-            <div className=' p-2 md:p-4 mb-2' style={{background: '#282726'}}>
+            <div className=' p-2 md:p-10 mb-2' style={{background: '#282726', borderRadius: '7px'}}>
               <div className="flex justify-between items-center mb-2">
                 <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
               </div>
 
-              <div
-                className="px-5 py-6"
-                style={{
-                  width: '100%',
-                  height: 'auto',
-                  maxHeight: '100%',
-                  background: '#D9D9D9',
-                  borderRadius: '7px',
-                }}
-              >
-                <div className="bg-white rounded-md py-5 px-7 mb-5">
-                  <div className="flex justify-between items-center">
-                    <h1 className="font-semibold tracking-wide text-xl">Daily Report</h1>
-                    <p className="text-xl text-black">
-                      <span className="font-bold mr-4">{data.daily_total_appointments}</span>
-                      <FontAwesomeIcon icon={faUser} />
-                    </p>
-                  </div>
-                  {/* daily report graph */}
-                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                    <Line data={dailyData} options={options1} />
-                  </div>
-                </div>
+                <div className='p-4 md:p-1' style={{borderRadius: 10, background: '#D1C8C3'}}>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5  p-5" >
+                      {/* Appointments Card */}
+                      <div className="bg-white shadow-md rounded-lg p-6">
+                      <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments }</p>
 
-                <div className="bg-white rounded-md py-5 px-7 mb-5">
-                  <div className="flex justify-between items-center">
-                    <h1 className="font-semibold tracking-wide text-xl">Weekly Report</h1>
-                    <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
-                  </div>
-                  {/* weekly report graph */}
-                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                    <Line data={weeklyData} options={options1} />
-                  </div>
-                </div>
+                        <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
+                      </div>
+
+                      {/* Approved Card */}
+                      <div className="bg-green-100 shadow-md rounded-lg md:ml-2 p-6">
+                        <p className="text-4xl text-right mb-5  font-bold text-green-900 mt-2">{data.approved_appointments}</p>
+                        <h2 className="text-xl font-semibold text-green-700">Approved</h2>
+
+                       </div>
+
+                      {/* Rejected Card */}
+                      <div className="bg-red-100 shadow-md rounded-lg p-6">
+                        <p className="text-4xl text-right mb-5  font-bold text-red-900 mt-2">{data.rejected_appointments}</p>
+                        <h2 className="text-xl font-semibold text-red-700">Rejected</h2>
+
+                      </div>
+
+                      {/* pending card */}
+                      <div className="bg-blue-100 shadow-md rounded-lg p-6">
+                        <p className="text-4xl text-right mb-5  font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
+                        <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
+
+                      </div>                      
+                    </div>
 
 
-                <div className="bg-white rounded-md py-5 px-7">
-                  <div className="flex justify-between items-center">
-                    <h1 className="font-semibold tracking-wide text-xl">Monthly Report</h1>
-                    <FontAwesomeIcon className="text-xl text-black" icon={faUsers} />
+                    <div className="mx-5 mb-5  min-h-[700px]  rounded-md px-5 " style={{background: 'rgba(40, 39, 38, 1)'}} >
+                  
+                      <div className="flex justify-between items-center py-2">
+                        <h1 className='text-white font-bold text-2xl p-2 '>Consultation Approved Log</h1>
+                      </div>
+  
+  
+                      <div className='w-full min-h-[600px] rounded-md pt-5' style={{ background: 'rgba(209, 200, 195, 1)' }}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-center table-auto">
+                        <thead>
+                          <tr>
+                            <th className="py-2 px-4">Date</th>
+                            <th className="py-2 px-4">Time</th>
+                            <th className="py-2 px-4">Consultation Mode</th>
+                            <th className="py-2 px-4">Instructor</th>
+
+                          </tr>
+                        </thead>
+                        <tbody>
+      {filteredRequests && filteredRequests.length > 0 ? (
+        filteredRequests.map((request) => (
+          <tr>
+          <td className="py-2 px-4">{request.appointment_date}</td>
+          <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
+          <td className="py-2 px-4">{request.consultation_mode}</td>
+<td className="py-2 px-4">
+  {request.instructor_first_name.charAt(0).toUpperCase() + request.instructor_first_name.slice(1)}{' '}
+  {request.instructor_last_name.charAt(0).toUpperCase() + request.instructor_last_name.slice(1)}
+</td>
+
+        </tr>
+        ))
+      ) : (
+        <p className=" text-center text-gray-500 " >No Requests Available</p>
+ 
+      )}
+                </tbody>
+
+</table>        
+                    </div>
                   </div>
-                  {/* monthly report graph */}
-                  <div className="mt-4" style={{ width: '100%', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
-                    <Line data={yearlyData} options={options1} />
+
+
+  
+  
                   </div>
+
                 </div>
-              </div>
+
+
+
+
+
             </div>
           </div>
 
