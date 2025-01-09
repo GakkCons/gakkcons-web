@@ -43,7 +43,6 @@ const Login: React.FC = () => {
       return response.data;
     },
     onSuccess: (response) => {
-      console.log('Login successful:', response);
       sessionStorage.setItem('authToken', response.token);
       sessionStorage.setItem('userType', response.userType);
       queryClient.setQueryData(['authToken'], response.token);

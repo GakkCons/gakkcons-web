@@ -1,35 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import LogoSmall from '../assets/images/logosmall.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChartSimple, faChevronDown, faFilter, faMagnifyingGlass, faUser, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faChartSimple, faChevronDown, faFilter, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/navbar';
-import { Line } from 'react-chartjs-2';
-import { 
-  Chart as ChartJS,
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Title,
-  Tooltip,
-  Legend,
- } from 'chart.js';
-import axios from './plugins/axios';
 import { useQuery } from '@tanstack/react-query';
-import calendarIcon from '../assets/images/CRD.png'
-
- // Register Chart.js components
-ChartJS.register(
-  LineElement,
-  PointElement,
-  LinearScale,
-  CategoryScale,
-  Title,
-  Tooltip,
-  Legend
-);
+import axios from './plugins/axios';
 import './style.css';
 
+// Fetch data function
 const fetchAnalyticsData = async (token: string) => {
   if (!token) {
     throw new Error('No authentication token found');
@@ -40,7 +18,7 @@ const fetchAnalyticsData = async (token: string) => {
       'appointments/get/analytics',
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Corrected Authorization header format
+          Authorization: `Bearer ${token}`, 
         },
       }
     );
@@ -50,107 +28,61 @@ const fetchAnalyticsData = async (token: string) => {
   }
 };
 
-
-
-
 function Report() {
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const [isStatusExpanded, setIsStatusExpanded] = useState<boolean>(false);
-  const [status, setStatus] = useState('');
-  const [reportType, setReportType] = useState('daily'); // Toggle between daily and weekly
-
+  const [isExpanded, setIsExpanded] = useState(false);
   const token = sessionStorage.getItem('authToken');
-
-
   
-    const { data, error, isLoading, refetch } = useQuery({
-      queryKey: ['anallytics'],
-      queryFn: () => fetchAnalyticsData(token),
-      retry: false,
-      enabled: !!token,
-    });
-  
+  // Fetch data using react-query
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ['analytics'],
+    queryFn: () => fetchAnalyticsData(token),
+    enabled: !!token,
+    retry: false,
+  });
 
-    const [filteredRequests, setFilteredRequests] = useState([]);
+  const [filteredRequests, setFilteredRequests] = useState([]);
 
-    // Effect to filter appointments if data is available
-    useEffect(() => {
-      if (data && data.appointments) {
-        setFilteredRequests(data.appointments);
-      }
-    }, [data]);
+  useEffect(() => {
+    if (data && data.appointments) {
+      setFilteredRequests(data.appointments);
+    }
+  }, [data]);
 
-    const formatTime = (time) => {
-      const [hours, minutes] = time.split(':');
-      let hour = parseInt(hours, 10);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      hour = hour % 12;
-      hour = hour ? hour : 12; // the hour '0' should be '12'
-      const formattedTime = `${hour}:${minutes} ${ampm}`;
-      return formattedTime;
-    };
-
-  const toggleExpansion = () => {
-    setIsExpanded((prevState) => !prevState);
+  // Handle time formatting
+  const formatTime = (time) => {
+    const [hours, minutes] = time.split(':');
+    let hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    hour = hour ? hour : 12; // the hour '0' should be '12'
+    return `${hour}:${minutes} ${ampm}`;
   };
 
-  const toggleExpansionStatus = () => {
-    setIsStatusExpanded((prevState) => !prevState);
-  };
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-  const toggleStatus = (newStatus: React.SetStateAction<string>) => {
-    setStatus(newStatus);
-    setIsStatusExpanded(false);
-  };
   return (
     <>
+      {/* Logo and Navbar */}
       <div className="mr-10 mt-5 logo">
         <div className="flex items-center">
           <img src={LogoSmall} alt="logo" className="w-30 h-1/12" />
-          <h1
-            className="m-0 p-0 text-5xl font-black font-montserrat"
-            style={{ letterSpacing: '2px' }}
-          >
+          <h1 className="m-0 p-0 text-5xl font-black font-montserrat" style={{ letterSpacing: '2px' }}>
             GakkCons
           </h1>
         </div>
       </div>
 
-
-      <div className="flex  items-center  dropdowncontainer"  >
-        <div
-          style={{
-            border: '1px solid black',
-            borderRadius: '7px',
-            width: '300px',
-            position: 'absolute',
-            top: '60px',
-            right: '20px',
-          }}
-          className='dropdownlist'
-        >
-          <div className="flex items-center p-3 cursor-pointer" onClick={toggleExpansion}>
-            <div
-              className="mr-3"
-              style={{
-                width: '10px',
-                height: '10px',
-                background: '#282726',
-                borderRadius: '30px',
-                padding: '10px',
-                
-              }}
-            ></div>
+      {/* Teacher Dropdown */}
+      <div className="flex items-center dropdowncontainer">
+        <div style={{ border: '1px solid black', borderRadius: '7px', width: '300px', position: 'absolute', top: '60px', right: '20px' }} className="dropdownlist">
+          <div className="flex items-center p-3 cursor-pointer" onClick={() => setIsExpanded(prev => !prev)}>
+            <div className="mr-3" style={{ width: '10px', height: '10px', background: '#282726', borderRadius: '30px', padding: '10px' }}></div>
             <h1 className="pr-10">Teacher</h1>
             <span style={{ position: 'absolute', right: '10px' }}>
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-              />
+              <FontAwesomeIcon icon={faChevronDown} className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
             </span>
           </div>
-
-          {/* Expanded Content Inside */}
           {isExpanded && (
             <div className="px-4 pt-1 pb-3 rounded-b" style={{ width: '100%' }}>
               <button className="text-sm font-semibold">
@@ -161,102 +93,66 @@ function Report() {
         </div>
       </div>
 
-
+      {/* Report Content */}
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4">
-       <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
-       <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{ position:  'relative' }}>
-           
+        {/* Handle Loading and Error States */}
+        <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
+          <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{ position: 'relative' }}>
             <Navbar />
           </div>
 
-              <div
-                className="col-span-1 md:col-span-8 lg:col-span-9"
-                style={{
-                  maxWidth: '100%',
-                  width: '100%',
-                  maxHeight: '100%',
-                  height: 'auto',
-                  background: 'white',
-                  borderRadius: '7px',
-                }}
-              >
+          <div className="col-span-1 md:col-span-8 lg:col-span-9" style={{ maxWidth: '100%', width: '100%', maxHeight: '100%', height: 'auto', background: 'white', borderRadius: '7px' }}>
+            <div className="pb-2 px-2 flex flex-col md:flex-row justify-between items-center gap-4">
+              <div className="flex justify-start items-center gap-2">
+                <h1 className="text-black text-xl sm:text-2xl tracking-wide font-semibold">
+                  Consultation Report Dashboard
+                </h1>
+                <FontAwesomeIcon className="text-xl sm:text-2xl text-black" icon={faChartSimple} />
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <input className="p-2 w-60 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400" type="text" name="search" placeholder="Search Instructor" />
+                  <FontAwesomeIcon className="text-xl text-black absolute right-3 top-2.5" icon={faMagnifyingGlass} />
+                </div>
+                <FontAwesomeIcon className="text-2xl text-black cursor-pointer" icon={faFilter} />
+              </div>
+            </div>
 
-      <div className="pb-2 px-2 flex flex-col md:flex-row justify-between items-center gap-4">
-        {/* Header Section */}
-        <div className="flex justify-start items-center gap-2">
-          <h1 className="text-black text-xl sm:text-2xl tracking-wide font-semibold">
-            Consultation Report Dashboard
-          </h1>
-          <FontAwesomeIcon className="text-xl sm:text-2xl text-black" icon={faChartSimple} />
-        </div>
-
-        {/* Controls Section (Inline Search and Filter) */}
-        <div className="flex items-center gap-4">
-          {/* Search Input */}
-          <div className="relative">
-            <input
-              className="p-2 w-80 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
-              type="text"
-              name="search"
-              placeholder="Search Instructor"
-            />
-            <FontAwesomeIcon
-              className="text-xl text-black absolute right-3 top-2.5"
-              icon={faMagnifyingGlass}
-            />
-          </div>
-
-            {/* Filter Icon */}
-            <FontAwesomeIcon className="text-2xl text-black cursor-pointer" icon={faFilter} />
-             </div>
-           </div>
-
-
-            <div className=' p-2 md:p-10 mb-2' style={{background: '#282726', borderRadius: '7px'}}>
+            <div className="p-2 md:p-10 mb-2" style={{ background: '#282726', borderRadius: '7px' }}>
               <div className="flex justify-between items-center mb-2">
                 <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
               </div>
+              <div className="p-4 md:p-1" style={{ borderRadius: 10, background: '#D1C8C3' }}>
+                {/* Appointment Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5 p-5">
+                  <div className="bg-white shadow-md rounded-lg p-6">
+                    <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments}</p>
+                    <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
+                  </div>
 
-                <div className='p-4 md:p-1' style={{borderRadius: 10, background: '#D1C8C3'}}>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5  p-5" >
-                      {/* Appointments Card */}
-                      <div className="bg-white shadow-md rounded-lg p-6">
-                      <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments }</p>
+                  <div className="bg-green-100 shadow-md rounded-lg md:ml-2 p-6">
+                    <p className="text-4xl text-right mb-5 font-bold text-green-900 mt-2">{data.approved_appointments}</p>
+                    <h2 className="text-xl font-semibold text-green-700">Approved</h2>
+                  </div>
 
-                        <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
-                      </div>
+                  <div className="bg-red-100 shadow-md rounded-lg p-6">
+                    <p className="text-4xl text-right mb-5 font-bold text-red-900 mt-2">{data.rejected_appointments}</p>
+                    <h2 className="text-xl font-semibold text-red-700">Rejected</h2>
+                  </div>
 
-                      {/* Approved Card */}
-                      <div className="bg-green-100 shadow-md rounded-lg md:ml-2 p-6">
-                        <p className="text-4xl text-right mb-5  font-bold text-green-900 mt-2">{data.approved_appointments}</p>
-                        <h2 className="text-xl font-semibold text-green-700">Approved</h2>
+                  <div className="bg-blue-100 shadow-md rounded-lg p-6">
+                    <p className="text-4xl text-right mb-5 font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
+                    <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
+                  </div>
+                </div>
 
-                       </div>
+                {/* Consultation Log */}
+                <div className="mx-5 mb-5 min-h-[700px] rounded-md px-5" style={{ background: 'rgba(40, 39, 38, 1)' }}>
+                  <div className="flex justify-between items-center py-2">
+                    <h1 className="text-white font-bold text-2xl p-2">Consultation Approved Log</h1>
+                  </div>
 
-                      {/* Rejected Card */}
-                      <div className="bg-red-100 shadow-md rounded-lg p-6">
-                        <p className="text-4xl text-right mb-5  font-bold text-red-900 mt-2">{data.rejected_appointments}</p>
-                        <h2 className="text-xl font-semibold text-red-700">Rejected</h2>
-
-                      </div>
-
-                      {/* pending card */}
-                      <div className="bg-blue-100 shadow-md rounded-lg p-6">
-                        <p className="text-4xl text-right mb-5  font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
-                        <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
-
-                      </div>                      
-                    </div>
-
-
-                    <div className="mx-5 mb-5  min-h-[700px]  rounded-md px-5 " style={{background: 'rgba(40, 39, 38, 1)'}} >
-                  
-                      <div className="flex justify-between items-center py-2">
-                        <h1 className='text-white font-bold text-2xl p-2 '>Consultation Approved Log</h1>
-                      </div>
-  
-  
-                      <div className='w-full min-h-[600px] rounded-md pt-5' style={{ background: 'rgba(209, 200, 195, 1)' }}>
+                  <div className="w-full min-h-[600px] rounded-md pt-5" style={{ background: 'rgba(209, 200, 195, 1)' }}>
                     <div className="overflow-x-auto">
                       <table className="w-full text-center table-auto">
                         <thead>
@@ -265,54 +161,31 @@ function Report() {
                             <th className="py-2 px-4">Time</th>
                             <th className="py-2 px-4">Consultation Mode</th>
                             <th className="py-2 px-4">Instructor</th>
-
                           </tr>
                         </thead>
                         <tbody>
-      {filteredRequests && filteredRequests.length > 0 ? (
-        filteredRequests.map((request) => (
-          <tr>
-          <td className="py-2 px-4">{request.appointment_date}</td>
-          <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
-          <td className="py-2 px-4">{request.consultation_mode}</td>
-<td className="py-2 px-4">
-  {request.instructor_first_name.charAt(0).toUpperCase() + request.instructor_first_name.slice(1)}{' '}
-  {request.instructor_last_name.charAt(0).toUpperCase() + request.instructor_last_name.slice(1)}
-</td>
-
-        </tr>
-        ))
-      ) : (
-        <p className=" text-center text-gray-500 " >No Requests Available</p>
- 
-      )}
-                </tbody>
-
-</table>        
+                          {filteredRequests && filteredRequests.length > 0 ? (
+                            filteredRequests.map((request) => (
+                              <tr key={request.appointment_date}>
+                                <td className="py-2 px-4">{request.appointment_date}</td>
+                                <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
+                                <td className="py-2 px-4">{request.consultation_mode}</td>
+                                <td className="py-2 px-4">{request.instructor_first_name} {request.instructor_last_name}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr><td colSpan="4" className="text-center text-gray-500">No Requests Available</td></tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
-
-
-  
-  
-                  </div>
-
                 </div>
-
-
-
-
-
+              </div>
             </div>
           </div>
-
-
         </div>
       </div>
-
-
-
-
     </>
   );
 }
