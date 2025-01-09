@@ -20,7 +20,6 @@ const Navbar: React.FC = () => {
       <div className="flex flex-col">
         <div className="flex-grow">
           <ul className="flex flex-col space-y-1 mt-4">
-            {/* Consultation Request */}
             <li>
               <Link
                 to="/home"
@@ -41,7 +40,6 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
 
-            {/* Consultation Queue */}
             <li>
               <Link
                 to="/consultationqueue"
@@ -62,7 +60,6 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
 
-            {/* Profile */}
             <li>
               <Link
                 to="/profile"
@@ -100,7 +97,7 @@ const Navbar: React.FC = () => {
                       className="ml-1 mr-2"
                       alt=""
                     />
-                    <h1 className="text-lg font-bold">Report</h1>
+                    <h1 className="text-lg font-bold">Report Status</h1>
                   </div>
                 </Link>
               </li>

@@ -20,6 +20,7 @@ const fetchAppointments = async (token: string) => {
   return response.data;
 };
 
+const userType = sessionStorage.getItem('userType');  
 
 const fetchProfile = async (token: string) => {
   const response = await axios.get('/users/profile', {
@@ -78,8 +79,14 @@ function Profile() {
   useEffect(() => {
     if (profile) {
       setActiveButtons([profile.modetype]);
+      // Set default idnumber if it's null or empty
+      setprofiledata((prevData) => ({
+        ...prevData,
+        idnumber: profile.idnumber || '20xxxxxx',
+      }));
     }
   }, [profile]);
+  
 
 
   const handleButtonClick = (mode) => {
@@ -161,6 +168,8 @@ function Profile() {
     });
   };
   
+
+
   return (
     <>
       <Header />
@@ -265,9 +274,23 @@ function Profile() {
 
 
                     <div className='mt-5 text-center'>
-                      <h1 className="text-3xl font-extrabold tracking-wide mb-1">TEACHER</h1>
-                      <p className='text-sm font-lightbold'>Instruction ID No: <span className='ml-4' >20xxxxxxxx</span></p>
-                    </div>
+                      <div className="mt-5 text-center">
+                      {userType === 'faculty' ? (
+                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">TEACHER</h1>
+                        ) : userType === 'admin' ? (
+                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">Admin</h1>
+                        ) : (
+                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">USER</h1>
+                        )}
+
+                      </div>
+
+                      <p className='text-sm font-lightbold'>
+                        ID Number: <span className='ml-4'>
+                          {profile?.idnumber || '20xxxxxx'}
+                        </span>
+                      </p>
+                      </div>
                   </div>
               </div>
 
@@ -330,7 +353,7 @@ function Profile() {
                       </div>
                       <div className="mb-2">
                         <label htmlFor="idno" className="block text-sm font-medium text-gray-700 mb-1">
-                          Instructor ID No.
+                          ID Number
                         </label>
                         <input 
                           type="text" 

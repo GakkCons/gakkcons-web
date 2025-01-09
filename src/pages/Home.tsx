@@ -294,7 +294,8 @@ function Home() {
                 </div>
                         <div>
                           <h2 className="text-2xl font-bold">{selectedRequest.name}</h2>
-                          <p className='text-lg font-bold text-gray-700' >id no: {selectedRequest.student_id}</p>
+                          <p className='text-lg font-bold text-gray-700' >id no: {selectedRequest?.idnumber || '20xxxxxx'}
+                          </p>
                         </div>
 
         

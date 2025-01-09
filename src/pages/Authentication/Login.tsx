@@ -9,17 +9,17 @@ import Error from '../components/error';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();  
+  const queryClient = useQueryClient();
   const [showLogoScreen, setShowLogoScreen] = useState<boolean>(true);
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [data, setData] = useState({ email: 'jaydemike21@gmail.com', password: 'qwerty123' });
-
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false); // Modal for resetting password
   const [email, setEmail] = useState('');
-
-  const [isErrorOpen, setIsErrorOpen] = useState<boolean>(false); 
-  const [errorMessage, setErrorMessage] = useState<string>(''); 
-
+  const [verificationCode, setVerificationCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isErrorOpen, setIsErrorOpen] = useState<boolean>(false);
 
   const authToken = queryClient.getQueryData(['authToken']) || sessionStorage.getItem('authToken');
 
@@ -39,55 +39,72 @@ const Login: React.FC = () => {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post('/users/login', data);
-      return response.data;  
+      const response = await axios.post('/users/login', { email, password: newPassword });
+      return response.data;
     },
     onSuccess: (response) => {
-      console.log('Login successful:', response);
-
-      if (response.userType !== 'admin' && response.userType !== 'faculty') {
-        setErrorMessage('Access denied: Your account does not have the required permissions.');
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('userType');
-        queryClient.removeQueries(['authToken']);
-        queryClient.removeQueries(['userType']);
-        setIsErrorOpen(true);  
-        return; 
-      }
-
       sessionStorage.setItem('authToken', response.token);
       sessionStorage.setItem('userType', response.userType);
-
       queryClient.setQueryData(['authToken'], response.token);
       queryClient.setQueryData(['userType'], response.userType);
-
       navigate('/home');
     },
     onError: (error) => {
       console.error('Login failed:', error);
-    
-      if (error.response && error.response.data) {
-        setErrorMessage(`Login failed: ${error.response.data.message}`);
-      } else if (error.message) {
-        setErrorMessage(`Login failed: ${error.message}`);
-      } else {
-        setErrorMessage("Login failed: An unexpected error occurred.");
-      }
-    
-      setIsErrorOpen(true); 
+      setErrorMessage("Login failed: An unexpected error occurred.");
+      setIsErrorOpen(true);
     },
-    
   });
 
   const handleLogin = () => {
-    loginMutation.mutate();  // Trigger the login mutation
+    loginMutation.mutate();
   };
 
-  // forgot password - send email
   const handleForgotPassword = () => {
-    console.log(email);
-  }
+    axios
+      .post("users/password/forgot", { email })
+      .then(() => {
+        console.log("Password reset request sent");
+        setIsModalOpen(false);
+        setIsResetPasswordModalOpen(true); // Show reset password modal after sending email
+      })
+      .catch((error) => {
+        console.error("Error sending password reset request:", error.response?.data || error.message);
+      });
+  };
 
+  const handlePasswordReset = () => {
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      setIsErrorOpen(true);
+      return;
+    }
+  
+    axios
+      .post("users/password/reset", {
+        email,
+        verificationCode,
+        newPassword,
+        confirmPassword,
+      })
+      .then((response) => {
+        alert("Password reset successfully");
+  
+        // Automatically login the user after password reset
+        loginMutation.mutate();
+  
+        setIsResetPasswordModalOpen(false); // Close modal after success
+      })
+      .catch((error) => {
+        console.error("Error resetting password:", error.response?.data || error.message);
+      });
+  };
+  
+
+  const closeErrorModal = () => {
+    setIsErrorOpen(false);
+    setErrorMessage('');
+  };
 
   // Logo screen timer
   useEffect(() => {
@@ -104,10 +121,6 @@ const Login: React.FC = () => {
       </div>
     );
   }
-  const closeErrorModal = () => {
-    setIsErrorOpen(false); // Close error modal
-    setErrorMessage(''); // Clear the error message
-  };
 
   return (
     <div className="flex justify-center items-center w-screen h-screen bg-[#fff]">
@@ -125,8 +138,8 @@ const Login: React.FC = () => {
               id="email"
               placeholder="Email/School ID"
               className="w-full px-4 py-2 border rounded-lg border-black text-black focus:outline-none focus:ring-2 focus:ring-black"
-              value={data.email}
-              onChange={(e) => setData({ ...data, email: e.target.value })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
@@ -134,8 +147,8 @@ const Login: React.FC = () => {
             <input
               type={passwordVisible ? 'text' : 'password'}
               id="password"
-              value={data.password}
-              onChange={(e) => setData({ ...data, password: e.target.value })}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Enter your password"
               className="w-full px-4 py-2 border rounded-lg border-black text-black focus:outline-none focus:ring-2 focus:ring-black"
             />
@@ -149,7 +162,7 @@ const Login: React.FC = () => {
           </div>
 
           <div className="text-right mb-6">
-            <a href="#" className="text-black underline text-sm" onClick={() => setIsModalOpen(true)}>
+            <a href="#" className="text-black underline text-sm" onClick={handleModalToggle}>
               Forgot Password?
             </a>
           </div>
@@ -190,17 +203,70 @@ const Login: React.FC = () => {
             </div>
           )}
 
+          {/* Reset Password Modal */}
+          {isResetPasswordModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg min-w-[500px]">
+                <h2 className="text-lg font-semibold mb-4">Enter New Password</h2>
+
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Verification Code"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="password"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => setIsResetPasswordModalOpen(false)}
+                    className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handlePasswordReset}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Reset Password
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="text-right">
             <button
               className="w-40 bg-black text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
               onClick={handleLogin}
-              disabled={loginMutation.isLoading}  // Disable button while loading
+              disabled={loginMutation.isLoading}
             >
               {loginMutation.isLoading ? 'Loading...' : 'LOGIN'}
             </button>
           </div>
           <Error isOpen={isErrorOpen} onClose={closeErrorModal} message={errorMessage} />
-
         </div>
       </div>
     </div>

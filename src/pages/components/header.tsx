@@ -64,7 +64,17 @@ export default function Header() {
                 padding: '10px',
               }}
             ></div>
-            <h1 className="pr-10" style={{textTransform: 'capitalize' }}>{(userType === 'faculty' ? 'Teacher' : userType || 'User')}</h1> {/* Capitalize text */}
+            <h1 
+              className="pr-10" 
+              style={{ textTransform: 'capitalize' }}
+            >
+              {userType === 'faculty' 
+                ? 'Teacher' 
+                : userType === 'admin' 
+                  ? 'Admin' 
+                  : userType || 'User'}
+            </h1>
+
             <span style={{ position: 'absolute', right: '10px' }}>
               <FontAwesomeIcon
                 icon={faChevronDown}
