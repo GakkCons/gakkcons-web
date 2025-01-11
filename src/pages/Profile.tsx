@@ -42,7 +42,7 @@ function Profile() {
     firstName: "",
     lastName: "",
     email: "",
-    idnumber: "",
+    id_number: "",
     currentPassword: "",
     newPassword: ""
   })
@@ -78,11 +78,11 @@ function Profile() {
 
   useEffect(() => {
     if (profile) {
-      setActiveButtons([profile.modetype]);
-      // Set default idnumber if it's null or empty
+      setActiveButtons([profile.mode]);
+      // Set default id_number if it's null or empty
       setprofiledata((prevData) => ({
         ...prevData,
-        idnumber: profile.idnumber || '20xxxxxx',
+        id_number: profile.id_number || '20xxxxxx',
       }));
     }
   }, [profile]);
@@ -154,7 +154,7 @@ function Profile() {
         firstName: "",
         lastName: "",
         email: "",
-        idnumber: "",
+        id_number: "",
         currentPassword: "",
         newPassword: ""
       })
@@ -287,7 +287,7 @@ function Profile() {
 
                       <p className='text-sm font-lightbold'>
                         ID Number: <span className='ml-4'>
-                          {profile?.idnumber || '20xxxxxx'}
+                          {profile?.id_number || '20xxxxxx'}
                         </span>
                       </p>
                       </div>
@@ -357,12 +357,12 @@ function Profile() {
                         </label>
                         <input 
                           type="text" 
-                          placeholder={profile.idnumber} 
+                          placeholder={profile.id_number} 
                           className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                          value={profiledata.idnumber}
+                          value={profiledata.id_number}
                           onChange={(e) => {
                             setprofiledata({
-                              ...profiledata, idnumber: e.target.value
+                              ...profiledata, id_number: e.target.value
                             })
                           }}                          
                         />
@@ -477,7 +477,7 @@ function Profile() {
         filteredRequests.map((request) => (
           <tr>
           <td className="py-2 px-4">{request.appointment_date}</td>
-          <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
+          <td className="py-2 px-4">{formatTime(request.appointment_time) || request.appointment_time}</td>
           <td className="py-2 px-4">{request.appointment_type}</td>
         </tr>
         ))

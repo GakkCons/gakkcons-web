@@ -29,6 +29,8 @@ const fetchAnalyticsData = async (token: string) => {
   }
 };
 
+
+
 function Report() {
   const [isExpanded, setIsExpanded] = useState(false);
   const token = sessionStorage.getItem('authToken');
@@ -40,6 +42,8 @@ function Report() {
     enabled: !!token,
     retry: false,
   });
+
+  console.log(data)
 
   const [filteredRequests, setFilteredRequests] = useState([]);
 
