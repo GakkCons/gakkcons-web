@@ -47,8 +47,23 @@ const Login: React.FC = () => {
       sessionStorage.setItem('userType', response.userType);
       queryClient.setQueryData(['authToken'], response.token);
       queryClient.setQueryData(['userType'], response.userType);
-      navigate('/home');
+    
+      // Check if the user is a student and restrict access
+      if (response.userType === 'student') {
+        setErrorMessage('Access restricted for students.');
+        setIsErrorOpen(true);
+        // Clear sessionStorage
+        sessionStorage.removeItem('authToken');
+        sessionStorage.removeItem('userType');
+        
+        // Clear TanStack Query cache
+        queryClient.removeQueries(['authToken']);
+        queryClient.removeQueries(['userType']);
+      } else {
+        navigate('/home');
+      }
     },
+    
     onError: (error) => {
       console.error('Login failed:', error);
       setErrorMessage("Login failed: An unexpected error occurred.");

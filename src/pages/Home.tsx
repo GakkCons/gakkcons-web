@@ -35,9 +35,9 @@ function Home() {
   const token = sessionStorage.getItem('authToken');
 
   const [appointmentData, setAppointmentData] = useState({
-    status_id: 2,
+    status: "Confirmed",
     meet_link: "",
-    mode_id: 2,
+    mode: "online",
   })
 
   const { data, error, isLoading, refetch } = useQuery({
@@ -80,7 +80,7 @@ function Home() {
     };
   
     const statusData = {
-      status_id: 10, 
+      status: "Denied", 
     };
   
     try {
@@ -297,7 +297,7 @@ function Home() {
                 </div>
                         <div>
                           <h2 className="text-2xl font-bold">{selectedRequest.name}</h2>
-                          <p className='text-lg font-bold text-gray-700' >id no: {selectedRequest?.idnumber || '20xxxxxx'}
+                          <p className='text-lg font-bold text-gray-700' >id no: {selectedRequest?.id_number || '20xxxxxx'}
                           </p>
                         </div>
 

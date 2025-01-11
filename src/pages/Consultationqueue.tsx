@@ -61,7 +61,7 @@ console.log(data)
     };
   
     const statusData = {
-      status_id: 10, 
+      status: "Completed", 
     };
   
     try {

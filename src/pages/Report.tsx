@@ -64,14 +64,8 @@ function Report() {
     retry: false,
   });
 
-  // Fetch data using react-query
-  const { data: teachersData, error: teachersError, isLoading: teacherIsLoading } = useQuery({
-    queryKey: ['teachersdata'],
-    queryFn: () => getTeachers(token!),
-    enabled: !!token, // Only fetch if token exists
-    retry: false, // Don't retry on failure
-  });
-  console.log("Teachers Data", teachersData)
+  console.log(data)
+  
 
   // Fetch data using react-query
   const { data: teachersData, error: teachersError, isLoading: teacherIsLoading } = useQuery({
@@ -265,75 +259,75 @@ function Report() {
     </div>
   </div>
 </div>
-
-
       ) : (
 
-        <div className="p-2 md:p-10 mb-2" style={{ background: '#282726', borderRadius: '7px' }}>
-        <div className="flex justify-between items-center mb-2">
-          <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
-        </div>
-        <div className="p-4 md:p-1" style={{ borderRadius: 10, background: '#D1C8C3' }}>
-          {/* Appointment Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5 p-5">
-            <div className="bg-white shadow-md rounded-lg p-6">
-              <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments}</p>
-              <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
-            </div>
+        <div>Hello World</div>
 
-            <div className="bg-green-100 shadow-md rounded-lg md:ml-2 p-6">
-              <p className="text-4xl text-right mb-5 font-bold text-green-900 mt-2">{data.approved_appointments}</p>
-              <h2 className="text-xl font-semibold text-green-700">Approved</h2>
-            </div>
+      //   <div className="p-2 md:p-10 mb-2" style={{ background: '#282726', borderRadius: '7px' }}>
+      //   <div className="flex justify-between items-center mb-2">
+      //     <h1 className="text-white text-2xl tracking-wide font-semibold">Overall Instructor</h1>
+      //   </div>
+      //   <div className="p-4 md:p-1" style={{ borderRadius: 10, background: '#D1C8C3' }}>
+      //     {/* Appointment Cards */}
+      //     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5 p-5">
+      //       <div className="bg-white shadow-md rounded-lg p-6">
+      //         <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments}</p>
+      //         <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
+      //       </div>
 
-            <div className="bg-red-100 shadow-md rounded-lg p-6">
-              <p className="text-4xl text-right mb-5 font-bold text-red-900 mt-2">{data.rejected_appointments}</p>
-              <h2 className="text-xl font-semibold text-red-700">Rejected</h2>
-            </div>
+      //       <div className="bg-green-100 shadow-md rounded-lg md:ml-2 p-6">
+      //         <p className="text-4xl text-right mb-5 font-bold text-green-900 mt-2">{data.approved_appointments}</p>
+      //         <h2 className="text-xl font-semibold text-green-700">Approved</h2>
+      //       </div>
 
-            <div className="bg-blue-100 shadow-md rounded-lg p-6">
-              <p className="text-4xl text-right mb-5 font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
-              <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
-            </div>
-          </div>
+      //       <div className="bg-red-100 shadow-md rounded-lg p-6">
+      //         <p className="text-4xl text-right mb-5 font-bold text-red-900 mt-2">{data.rejected_appointments}</p>
+      //         <h2 className="text-xl font-semibold text-red-700">Rejected</h2>
+      //       </div>
 
-          {/* Consultation Log */}
-          <div className="mx-5 mb-5 min-h-[700px] rounded-md px-5" style={{ background: 'rgba(40, 39, 38, 1)' }}>
-            <div className="flex justify-between items-center py-2">
-              <h1 className="text-white font-bold text-2xl p-2">Consultation Approved Log</h1>
-            </div>
+      //       <div className="bg-blue-100 shadow-md rounded-lg p-6">
+      //         <p className="text-4xl text-right mb-5 font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
+      //         <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
+      //       </div>
+      //     </div>
 
-            <div className="w-full min-h-[600px] rounded-md pt-5" style={{ background: 'white' }}>
-              <div className="overflow-x-auto">
-                <table className="w-full text-center table-auto">
-                  <thead>
-                    <tr>
-                      <th className="py-2 px-4">Date</th>
-                      <th className="py-2 px-4">Time</th>
-                      <th className="py-2 px-4">Consultation Mode</th>
-                      <th className="py-2 px-4">Instructor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredRequests && filteredRequests.length > 0 ? (
-                      filteredRequests.map((request) => (
-                        <tr key={request.appointment_date}>
-                          <td className="py-2 px-4">{request.appointment_date}</td>
-                          <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
-                          <td className="py-2 px-4 uppercase">{request.consultation_mode}</td>
-                          <td className="py-2 px-4 capitalize">{request.instructor_first_name} {request.instructor_last_name}</td>
-                          </tr>
-                      ))
-                    ) : (
-                      <tr><td colSpan="4" className="text-center text-gray-500">No Requests Available</td></tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      //     {/* Consultation Log */}
+      //     <div className="mx-5 mb-5 min-h-[700px] rounded-md px-5" style={{ background: 'rgba(40, 39, 38, 1)' }}>
+      //       <div className="flex justify-between items-center py-2">
+      //         <h1 className="text-white font-bold text-2xl p-2">Consultation Approved Log</h1>
+      //       </div>
+
+      //       <div className="w-full min-h-[600px] rounded-md pt-5" style={{ background: 'white' }}>
+      //         <div className="overflow-x-auto">
+      //           <table className="w-full text-center table-auto">
+      //             <thead>
+      //               <tr>
+      //                 <th className="py-2 px-4">Date</th>
+      //                 <th className="py-2 px-4">Time</th>
+      //                 <th className="py-2 px-4">Consultation Mode</th>
+      //                 <th className="py-2 px-4">Instructor</th>
+      //               </tr>
+      //             </thead>
+      //             <tbody>
+      //               {filteredRequests && filteredRequests.length > 0 ? (
+      //                 filteredRequests.map((request) => (
+      //                   <tr key={request.appointment_date}>
+      //                     <td className="py-2 px-4">{request.appointment_date}</td>
+      //                     <td className="py-2 px-4">{formatTime(request.appointment_time)}</td>
+      //                     <td className="py-2 px-4 uppercase">{request.consultation_mode}</td>
+      //                     <td className="py-2 px-4 capitalize">{request.instructor_first_name} {request.instructor_last_name}</td>
+      //                     </tr>
+      //                 ))
+      //               ) : (
+      //                 <tr><td colSpan="4" className="text-center text-gray-500">No Requests Available</td></tr>
+      //               )}
+      //             </tbody>
+      //           </table>
+      //         </div>
+      //       </div>
+      //     </div>
+      //   </div>
+      // </div>
 
       )}
 
