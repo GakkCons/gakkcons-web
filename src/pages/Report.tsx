@@ -6,6 +6,7 @@ import Navbar from './components/navbar';
 import { useQuery } from '@tanstack/react-query';
 import axios from './plugins/axios';
 import './style.css';
+import Header from './components/header';
 
 // Fetch data function
 const fetchAnalyticsData = async (token: string) => {
@@ -107,35 +108,7 @@ function Report() {
 
   return (
     <>
-      {/* Logo and Navbar */}
-      <div className="mr-10 mt-5 logo">
-        <div className="flex items-center">
-          <img src={LogoSmall} alt="logo" className="w-30 h-1/12" />
-          <h1 className="m-0 p-0 text-5xl font-black font-montserrat" style={{ letterSpacing: '2px' }}>
-            GakkCons
-          </h1>
-        </div>
-      </div>
-
-      {/* Teacher Dropdown */}
-      <div className="flex items-center dropdowncontainer">
-        <div style={{ border: '1px solid black', borderRadius: '7px', width: '300px', position: 'absolute', top: '60px', right: '20px' }} className="dropdownlist">
-          <div className="flex items-center p-3 cursor-pointer" onClick={() => setIsExpanded(prev => !prev)}>
-            <div className="mr-3" style={{ width: '10px', height: '10px', background: '#282726', borderRadius: '30px', padding: '10px' }}></div>
-            <h1 className="pr-10">Teacher</h1>
-            <span style={{ position: 'absolute', right: '10px' }}>
-              <FontAwesomeIcon icon={faChevronDown} className={`transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-            </span>
-          </div>
-          {isExpanded && (
-            <div className="px-4 pt-1 pb-3 rounded-b" style={{ width: '100%' }}>
-              <button className="text-sm font-semibold">
-                <a href="/">Logout</a>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      <Header />
 
       {/* Report Content */}
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4">

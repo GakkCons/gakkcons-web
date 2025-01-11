@@ -204,11 +204,11 @@ console.log(data)
             <h1 className="text-2xl font-bold text-center">Student</h1>
 
             <div className="flex justify-center items-center gap-1 m-2">
-              <div className="text-center mx-5">
+              <div className="text-center  mx-1 w-28">
                 <div className='p-3 m-auto border-2 border-black rounded-full'>
                   <FontAwesomeIcon icon={faUser} className='text-2xl' aria-label="User Icon" />
                 </div>
-                <p className="text-sm font-bold">ID: {request.userid}</p>
+                <p className="text-sm font-bold">ID: {request.id_number || "20xxxxxxxx"}</p>
               </div>
 
               <div className="bg-white px-5 py-8 rounded-lg text-center">

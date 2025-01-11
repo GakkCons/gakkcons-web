@@ -47,6 +47,7 @@ function Home() {
     enabled: !!token,
   });
 
+  console.log(data)
 
 
   const handleAccept = async () => {
@@ -137,6 +138,8 @@ function Home() {
   const filteredRequests = data?.filter((request: any) => 
     request.status === 'Pending'
   ) || [];
+
+  console.log("filtered", filteredRequests)
   
 
   const handleRequestClick = (request: any) => {
