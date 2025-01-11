@@ -73,6 +73,15 @@ function Report() {
   });
   console.log("Teachers Data", teachersData)
 
+  // Fetch data using react-query
+  const { data: teachersData, error: teachersError, isLoading: teacherIsLoading } = useQuery({
+    queryKey: ['teachersdata'],
+    queryFn: () => getTeachers(token!),
+    enabled: !!token, // Only fetch if token exists
+    retry: false, // Don't retry on failure
+  });
+  console.log("Teachers Data", teachersData)
+
   const [filteredRequests, setFilteredRequests] = useState([]);
 
   // Handle search input change
@@ -105,6 +114,7 @@ function Report() {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
 
   return (
     <>
