@@ -208,7 +208,7 @@ console.log(data)
                 <div className='p-3 m-auto border-2 border-black rounded-full'>
                   <FontAwesomeIcon icon={faUser} className='text-2xl' aria-label="User Icon" />
                 </div>
-                <p className="text-sm font-bold">ID: {request.idnumber || "20xxxxxxxx"}</p>
+                <p className="text-sm font-bold">ID: {request.id_number || "20xxxxxxxx"}</p>
               </div>
 
               <div className="bg-white px-5 py-8 rounded-lg text-center">
