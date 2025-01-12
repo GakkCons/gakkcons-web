@@ -510,10 +510,10 @@ function Report() {
                   </h1>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5 p-5" style={{ borderRadius: 10, background: '#D1C8C3' }} >
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-4 my-5 p-5" style={{ borderRadius: 10, background: '#D1C8C3' }} >
                   {filteredTeachers.length > 0 && (
                     <>
-                      <div className="bg-white shadow-md rounded-lg p-6">
+                      <div className="col-span-1 lg:col-span-2 bg-white shadow-md rounded-lg p-6">
                         <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">
                           {filteredTeachers[0].appointments.length}
                         </p>
@@ -539,6 +539,13 @@ function Report() {
                           {filteredTeachers[0].appointments.filter((appointment) => appointment.status === 'Pending').length}
                         </p>
                         <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
+                      </div>
+
+                      <div className="bg-yellow-100 shadow-md rounded-lg p-6">
+                        <p className="text-4xl text-right mb-5 font-bold text-yellow-900 mt-2">
+                          {filteredTeachers[0].appointments.filter((appointment) => appointment.status === 'Completed').length}
+                        </p>
+                        <h2 className="text-xl font-semibold text-yellow-700">Completed</h2>
                       </div>
                     </>
                   )}
@@ -599,8 +606,8 @@ function Report() {
         </div>
         <div className="p-4 md:p-1" style={{ borderRadius: 10, background: '#D1C8C3' }}>
           {/* Appointment Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 my-5 p-5">
-            <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4 my-5 p-5">
+            <div className="col-span-1 lg:col-span-2 bg-white shadow-md rounded-lg p-6">
               <p className="text-4xl text-right mb-5 font-bold text-gray-900 mt-2">{data.total_appointments}</p>
               <h2 className="text-xl font-semibold text-gray-700">Appointments</h2>
             </div>
@@ -618,6 +625,11 @@ function Report() {
             <div className="bg-blue-100 shadow-md rounded-lg p-6">
               <p className="text-4xl text-right mb-5 font-bold text-blue-900 mt-2">{data.pending_appointments}</p>
               <h2 className="text-xl font-semibold text-blue-700">Pending</h2>
+            </div>
+
+            <div className="bg-yellow-100 shadow-md rounded-lg p-6">
+              <p className="text-4xl text-right mb-5 font-bold text-yellow-900 mt-2">{data.completed_appointments}</p>
+              <h2 className="text-xl font-semibold text-yellow-700">Completed</h2>
             </div>
           </div>
 
