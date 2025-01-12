@@ -37,8 +37,8 @@ function Home() {
   const [appointmentData, setAppointmentData] = useState({
     status: "Confirmed",
     meet_link: "",
-    mode: "online",
-  })
+    mode: "onsite",  
+  });
 
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ['appointments'],
@@ -47,7 +47,18 @@ function Home() {
     enabled: !!token,
   });
 
-  console.log(data)
+
+  const toggleMode = () => {
+    const newIsOnline = !isOnline;
+  
+    setIsOnline(newIsOnline);
+  
+    setAppointmentData((prevData) => ({
+      ...prevData,
+      meet_link: newIsOnline ? prevData.meet_link : '',  
+      mode: newIsOnline ? 'online' : 'onsite', 
+    }));
+  };
 
 
   const handleAccept = async () => {
@@ -61,6 +72,7 @@ function Home() {
         headers: headers,
       });
   
+
       console.log('Appointment updated successfully:', response.data);
       setShowAcceptModal(false);
       setViewDetails(false);
@@ -108,17 +120,7 @@ function Home() {
     };
   
 
-  const toggleMode = () => {
-    const newIsOnline = !isOnline;
-  
-    setIsOnline(newIsOnline);
-  
-    setAppointmentData((prevData) => ({
-      ...prevData,
-      meet_link: newIsOnline ? prevData.meet_link : '', 
-      mode_id: newIsOnline ? 1 : 2, 
-    }));
-  };
+
   
   const toggleExpansionStatus = () => {
     setIsStatusExpanded((prevState) => !prevState);
@@ -165,90 +167,7 @@ function Home() {
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4 ">
         <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
           <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{position: 'relative'}}>
-            {/* <div
-              style={{
-                position: 'absolute',
-                width: '100%',
-                background: '#D9D9D9',
-                border: '1px solid black',
-                borderRadius: '7px',
-              }}
-            >
-              <div
-                className="flex items-center p-3 cursor-pointer"
-                onClick={toggleExpansionStatus}
-                style={{
-                  background:
-                    status === 'Available'
-                      ? '#80E38A'
-                      : status === 'Unavailable'
-                      ? '#D96C6C'
-                      : status === 'All'
-                      ? ''
-                      : '',
-                      width: '100%'
-                }}
-              >
-                {status === 'Available' || status === 'Unavailable' || status === 'All' ? (
-                  <h1 className="pr-10 font-bold tracking-wider">{status}</h1>
-                ) : (
-                  <h1 className="pr-10 font-bold">Status</h1>
-                )}
-                <span style={{ position: 'absolute', right: '20px' }}>
-                  <FontAwesomeIcon
-                    icon={faChevronDown}
-                    className={`transform transition-transform ${isStatusExpanded ? 'rotate-180' : ''}`}
-                  />
-                </span>
-              </div>
-
-              {isStatusExpanded && (
-                <div>
-                  <div
-                    className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                    style={{ width: '100%' }}
-                    onClick={() => toggleStatus('All')}
-                  >
-                    <h1 className="text-md ml-3 font-normal">All</h1>
-                  </div>
-                  <div
-                    className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                    style={{ width: '100%' }}
-                    onClick={() => toggleStatus('Available')}
-                  >
-                    <h1 className="text-md ml-3 font-normal">Available</h1>
-                    <div
-                      className="mr-5"
-                      style={{
-                        width: '10px',
-                        height: '10px',
-                        background: '#15B31B',
-                        borderRadius: '30px',
-                        padding: '10px',
-                      }}
-                    ></div>
-                  </div>
-
-                  <div
-                    className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                    style={{ width: '100%' }}
-                    onClick={() => toggleStatus('Unavailable')}
-                  >
-                    <h1 className="text-md ml-3 font-normal">Unavailable</h1>
-                    <div
-                      className="mr-5"
-                      style={{
-                        width: '10px',
-                        height: '10px',
-                        background: '#CD1616',
-                        borderRadius: '30px',
-                        padding: '10px',
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-            </div> */}
+    
             <Navbar />
           </div>
 
@@ -501,10 +420,10 @@ function Home() {
                     filteredRequests.map((request) => (
                       <div
                         key={request.id}
-                        className="grid grid-cols-1 md:grid-cols-7 items-center p-5 mb-2 bg-white hover:bg-indigo-400 cursor-pointer"
+                        className="grid grid-cols-1 md:grid-cols-8 items-center p-5 mb-2 bg-white hover:bg-indigo-400 cursor-pointer"
                         onClick={() => handleRequestClick(request)}
                       >
-                        <div className="col-span-2 px-0 md:px-6 flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
+                        <div className="col-span-3 px-0 md:px-6 flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
                           <span
                             className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 md:mr-5 rounded-full"
                             style={{
@@ -526,14 +445,14 @@ function Home() {
                             }}
                           ></span>
 
-                          <h1 className="text-lg font-bold truncate max-w-[200px]">
+                          <h1 className="text-lg font-bold truncate">
                             {request.firstname} {request.lastname}
                           </h1>
                         </div>
-                        <p className="col-span-4 truncate whitespace-nowrap overflow-hidden smallcenter">
+                        <p className=" col-span-3 truncate whitespace-nowrap overflow-hidden ">
                           {request.reason}
                         </p>
-                        <span className="text-center font-bold">
+                        <span className="col-span-2 text-center font-bold">
                           {request.appointment_timestamp}
                         </span>
                       </div>
