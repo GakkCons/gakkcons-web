@@ -3,7 +3,6 @@ node_modules
 
 # Ignore build output
 public
-src
 
 # Ignore environment variables file
 .env

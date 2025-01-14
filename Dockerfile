@@ -8,10 +8,13 @@ WORKDIR /src
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install -g vite
+RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+COPY . ./
+
+# Copy Vite configuration
+COPY vite.config.ts ./
 
 # Expose the port the app runs on
 EXPOSE 5000
