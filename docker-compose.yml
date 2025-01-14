@@ -6,7 +6,7 @@ services:
     working_dir: /src
     volumes:
       - .:/src
-      - /node_modules
+      - /src/node_modules
     ports:
       - "8005:5000"
     command: npm run dev
