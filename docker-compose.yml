@@ -8,5 +8,5 @@ services:
       - .:/src
       - /src/node_modules
     ports:
-      - "8005:5000"
-    command: npm run dev
+      - "8005:5173"
+    command: npm run dev -- --host
