@@ -1,12 +1,12 @@
 version: "3.8"
 
 services:
-  frontend:
+  frontend: 
     build: .
     working_dir: /src
     volumes:
       - .:/src
       - /src/node_modules
     ports:
-      - "8005:5173"
+      - "8000:8000"
     command: npm run dev -- --host

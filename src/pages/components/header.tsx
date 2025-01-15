@@ -1,18 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LogoSmall from '../../assets/images/logosmall.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import '../style.css';
 import { useNavigate } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
+import axios from '../plugins/axios';
 
 export default function Header() {
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();  // Access TanStack query client
-  
+  const [data, setData] = useState([])
+
   // Get the user type from sessionStorage or query cache
-  const userType = sessionStorage.getItem('userType') || queryClient.getQueryData(['userType']);
+  const token = sessionStorage.getItem('authToken') || queryClient.getQueryData(['authToken']);
+
+
+  useEffect(() => {
+    if (token) {
+      // Set the token as the Authorization header for future requests
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // Fetch the user profile
+      axios
+        .get('users/profile')
+        .then((response) => {
+          setData(response.data)
+
+        })
+        .catch((error) => {
+          console.error('Error fetching user profile:', error);
+        });
+    } else {
+      console.warn('No token found');
+      // Redirect to login or show a message
+    }
+  }, [token]);
 
   const toggleExpansion = () => {
     setIsExpanded((prevState) => !prevState);
@@ -68,11 +92,7 @@ export default function Header() {
               className="pr-10" 
               style={{ textTransform: 'capitalize' }}
             >
-              {userType === 'faculty' 
-                ? 'Teacher' 
-                : userType === 'admin' 
-                  ? 'Admin' 
-                  : userType || 'User'}
+              {data.first_name} {data.last_name}
             </h1>
 
             <span style={{ position: 'absolute', right: '10px' }}>

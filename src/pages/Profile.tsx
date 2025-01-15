@@ -239,7 +239,7 @@ function Profile() {
 
               </div>
 
-              <div className="flex justify-center md:pt-5  lg:pt-20 xl:pt-20 ">
+              {/* <div className="flex justify-center  md:pt-5  lg:pt-20 xl:pt-20 ">
                 <div>
                     
                   <div className="w-48 h-48 bg-[#282726] rounded-full relative flex justify-center items-center">
@@ -275,24 +275,55 @@ function Profile() {
 
                     <div className='mt-5 text-center'>
                       <div className="mt-5 text-center">
-                      {userType === 'faculty' ? (
-                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">TEACHER</h1>
-                        ) : userType === 'admin' ? (
-                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">Admin</h1>
-                        ) : (
-                          <h1 className="text-3xl font-extrabold tracking-wide mb-1">USER</h1>
-                        )}
-
+                      <h1 className="text-2xl font-extrabold tracking-wide mb-1">{profile.first_name} {profile.last_name}</h1>
+                
                       </div>
 
                       <p className='text-sm font-lightbold'>
-                        ID Number: <span className='ml-4'>
-                          {profile?.id_number || '20xxxxxx'}
-                        </span>
+                       
+                          {profile?.email || '20xxxxxx'}
                       </p>
                       </div>
                   </div>
-              </div>
+              </div> */}
+
+<div className="flex justify-center mx-2 lg:mx-10 w-full h-96 items-center ">
+  <div>
+    <div className="w-48 h-48 bg-[#282726] rounded-full relative flex justify-center items-center">
+      <img src="" alt="" className="w-full h-full rounded-full object-cover" />
+
+      {isEdit ? (
+        <button
+          className="absolute px-3 py-2 text-white rounded-md shadow-lg font-bold tracking-wide"
+          style={{ bottom: '0px', background: 'rgba(155, 160, 161, 1)' }}
+          onClick={() => {
+            setIsEdit(false);
+          }}
+        >
+          BACK
+        </button>
+      ) : (
+        <button
+          className="absolute px-3 py-2 text-white rounded-md shadow-lg font-bold tracking-wide"
+          style={{ bottom: '0px', background: 'rgba(155, 160, 161, 1)' }}
+          onClick={() => {
+            setIsEdit(true);
+          }}
+        >
+          EDIT
+        </button>
+      )}
+    </div>
+
+    <div className="mt-5 ">
+      <h1 className="text-2xl font-extrabold tracking-wide mb-1 pr-2">
+        {profile?.first_name || ''} {profile?.last_name || ''}
+      </h1>
+      <p className="text-sm font-lightbold">{profile?.email || '20xxxxxx'}</p>
+    </div>
+  </div>
+</div>
+
 
               {isEdit ? (
                 <div className="flex justify-center px-4">
@@ -448,7 +479,7 @@ function Profile() {
                 </div>
 
               ) : (
-                <div className="w-full min-h-[700px] mt-6 rounded-md px-5 " style={{background: 'rgba(40, 39, 38, 1)'}} >
+                <div className="w-full min-h-[700px]  rounded-md px-5 " style={{background: 'rgba(40, 39, 38, 1)'}} >
                   
                 <div className="flex justify-between items-center py-2">
                   <h1 className='text-white font-bold w-1 '>Consultation Details</h1>

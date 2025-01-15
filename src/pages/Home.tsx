@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import LogoSmall from '../assets/images/logosmall.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronLeft, faCircleCheck, faCircleXmark, faUser, faX } from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/navbar';
 import './style.css';
-import quadsquare from '../assets/images/Vector.png';
 import Header from './components/header';
 import { useQuery } from '@tanstack/react-query';
 import axios from '../pages/plugins/axios'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns'; 
+
 
 // Function to fetch appointments
 const fetchAppointments = async (token: string) => {
@@ -38,6 +40,7 @@ function Home() {
     status: "Confirmed",
     meet_link: "",
     mode: "onsite",  
+    dateTime: new Date() 
   });
 
   const { data, error, isLoading, refetch } = useQuery({
@@ -47,6 +50,16 @@ function Home() {
     enabled: !!token,
   });
 
+
+  const handleDateChange = (date: Date | null) => {
+    if (date) {
+      setAppointmentData({
+        ...appointmentData,
+        dateTime: date
+      });
+      
+    }
+  };
 
   const toggleMode = () => {
     const newIsOnline = !isOnline;
@@ -62,28 +75,56 @@ function Home() {
 
 
   const handleAccept = async () => {
+    // Format the dateTime before sending it
+    const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
+  
+    // Update appointmentData with the formatted date
+    const updatedAppointmentData = {
+      ...appointmentData,
+      scheduled_date: formattedDate, // Use the formatted date here
+    };
+  
+    console.log(updatedAppointmentData)
     const headers = {
       'Content-Type': 'application/json',
       'Authorization': `${token}`,
     };
   
     try {
-      const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, appointmentData, {
+      // API request with the updated appointmentData
+      const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, updatedAppointmentData, {
         headers: headers,
       });
   
-
       console.log('Appointment updated successfully:', response.data);
       setShowAcceptModal(false);
       setViewDetails(false);
       refetch();
-
+  
     } catch (error) {
       console.error('Error updating appointment:', error.message);
-      console.log(appointmentData)
+      console.log(appointmentData);
     }
   };
 
+  const [zoomError, setZoomError] = useState('Enter a valid zoom link');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+
+    // Allow free typing
+    setAppointmentData({
+      ...appointmentData,
+      meet_link: value,
+    });
+
+    // Validate only after user finishes typing (or based on other conditions)
+    if (value && !/^(https?):\/\/[^\s$.?#].[^\s]*$/i.test(value)) {
+      setZoomError('Please enter a valid URL.');
+    } else {
+      setZoomError(''); // Clear error if the URL is valid
+    }
+  };
 
   const handleReject = async () => {
     const headers = {
@@ -154,11 +195,40 @@ function Home() {
     setSelectedRequest(null);
   };
 
-  const handleReport = () => {
-    alert('Reported');
-    setShowReportModal(false);
+  const handleReport = async () => {
+    if (!selectedReason) return;
+  
+    const reportData = {
+      appointment_id: selectedRequest.appointment_id, 
+      report: selectedReason,  
+    };
+  
+    try {
+      const response = await axios.post('appointments/report', reportData, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Pass the token for authentication
+        },
+      });
+  
+      console.log('Report submitted successfully:', response.data);
+      setShowReportModal(false); // Close the modal after successful report
+      // Optionally show a success message to the user
+      alert(`Report ${selectedReason}  submitted successfully.`);
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      alert('Failed to submit report. Please try again.');
+    }
   };
+  
 
+  const currentDateTime = new Date();
+  currentDateTime.setSeconds(0); // Remove seconds to make it a clean minute
+  currentDateTime.setMilliseconds(0); // Remove milliseconds for consistency
+
+  const endOfDay = new Date(currentDateTime);
+  endOfDay.setHours(23, 59, 59, 999); // Set to the last possible time of the day (11:59:59.999)
+
+  const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss.SSS'); // Format the date
 
   return (
     <>
@@ -258,7 +328,6 @@ function Home() {
                     </div>
 
 
-                      {/* Accept Modal */}
                       {showAcceptModal && (
                         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4' style={{zIndex: '2'}}>
                           <div className='relative bg-gray-200 rounded shadow-lg w-full max-w-md p-5'>
@@ -292,26 +361,47 @@ function Home() {
                               </div>
                             </div>
 
-                            <p className='bg-white rounded-md p-5 h-48 mb-5'>{selectedRequest.reason}</p>
+                            {/* <p className='bg-white rounded-md p-5 h-48 mb-5'>{selectedRequest.reason}</p> */}
 
-                            {isOnline && (
-                              <input className='bg-white rounded-md p-3 mb-5 w-full border-black' value={appointmentData.meet_link} type="text" placeholder="Enter a zoom link"
-                              onChange={(e) => {
-                                setAppointmentData({
-                                  ...appointmentData, meet_link: e.target.value
-                                })
-                              }}
+                            <div className='mb-3 w-full'>
+                              <DatePicker
+                                id="datetime-picker"
+                                selected={appointmentData.dateTime}
+                                onChange={handleDateChange}
+                                showTimeSelect
+                                dateFormat="Pp"
+                                timeIntervals={15} // 15 minutes interval
+                                timeCaption="Time"
+                                className="bg-white border border-gray-300 rounded-md py-3 px-28 w-fit min-w-96  text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                minDate={currentDateTime} // Disable past dates
+                                minTime={currentDateTime} // Disable past times (on the selected date)
+                                maxTime={endOfDay} // Allow up to the end of the day
                               />
 
+                            </div>
+
+                            {isOnline && (
+                                       <div>
+                                       <input
+                                         className="bg-white rounded-md p-3 mb-1  w-full border-black text-center"
+                                         value={appointmentData.meet_link}
+                                         type="url"
+                                         placeholder="Enter a Zoom link"
+                                         onChange={handleInputChange}
+                                         required
+                                       />
+                                       {zoomError && <p className="text-red-500 text-right text-sm m-0 p-0">{zoomError}</p>} 
+                                     </div>
+                            
+
                             )}
-                            <div className='flex justify-center'>
+                            <div className='flex justify-center mt-2'>
                               <button className='px-4 py-2 bg-green-500 text-white rounded' onClick={handleAccept}>OK</button>
                             </div>
                           </div>
                         </div>
                       )}
 
-                      {/* Report Modal */}
                       {showReportModal && (
                         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4'>
                           <div className='relative bg-gray-200 rounded shadow-lg w-full max-w-md p-5'>
@@ -329,7 +419,7 @@ function Home() {
                                 <input 
                                   type='radio' 
                                   name='reportReason' 
-                                  value='hateSpeech' 
+                                  value='Hate Speech' 
                                   className='form-radio h-5 w-5 text-red-500' 
                                   onChange={(e) => setSelectedReason(e.target.value)} 
                                 />
@@ -340,7 +430,7 @@ function Home() {
                                 <input 
                                   type='radio' 
                                   name='reportReason' 
-                                  value='bullying' 
+                                  value='Bullying/Harassment' 
                                   className='form-radio h-5 w-5 text-red-500' 
                                   onChange={(e) => setSelectedReason(e.target.value)} 
                                 />
@@ -351,7 +441,7 @@ function Home() {
                                 <input 
                                   type='radio' 
                                   name='reportReason' 
-                                  value='violentContent' 
+                                  value='Violent Content' 
                                   className='form-radio h-5 w-5 text-red-500' 
                                   onChange={(e) => setSelectedReason(e.target.value)} 
                                 />
@@ -362,7 +452,7 @@ function Home() {
                                 <input 
                                   type='radio' 
                                   name='reportReason' 
-                                  value='selfHarm' 
+                                  value='Self-Harm Content' 
                                   className='form-radio h-5 w-5 text-red-500' 
                                   onChange={(e) => setSelectedReason(e.target.value)} 
                                 />
@@ -384,7 +474,6 @@ function Home() {
 
                       )}
 
-                        {/* Modal for rejection confirmation */}
                       {showRejectModal && (
                         <div
                           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
@@ -412,6 +501,7 @@ function Home() {
                           </div>
                         </div>
                       )}
+
                   </div>
                 </div>
               ) : (
