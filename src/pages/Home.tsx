@@ -398,7 +398,7 @@ function Home() {
 
                             )}
                             <div className='flex justify-center mt-2'>
-                              <button className='px-4 py-2 bg-green-500 text-white rounded' onClick={handleAccept}>OK</button>
+                              <button className='px-4 py-2 bg-green-500 text-white rounded' onClick={handleAccept} disabled={zoomError}>OK</button>
                             </div>
                           </div>
                         </div>
