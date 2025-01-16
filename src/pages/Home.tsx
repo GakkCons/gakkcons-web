@@ -97,6 +97,14 @@ function Home() {
       setShowAcceptModal(false);
       setViewDetails(false);
       refetch();
+      setIsOnline(false);
+      setAppointmentData({
+        status: "Confirmed",
+        meet_link: "",
+        mode: "onsite",  
+        dateTime: new Date() 
+      })
+      setSelectedRequest('')
   
     } catch (error) {
       console.error('Error updating appointment:', error.message);
@@ -397,9 +405,18 @@ function Home() {
                             
 
                             )}
-                            <div className='flex justify-center mt-2'>
-                              <button className='px-4 py-2 bg-green-500 text-white rounded' onClick={handleAccept} disabled={zoomError}>OK</button>
-                            </div>
+                            <div className="flex justify-center mt-2">
+                          <button
+                            className="px-4 py-2 bg-green-500 text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            onClick={handleAccept}
+                            disabled={
+                              !appointmentData.dateTime || // Disable if no date/time is selected
+                              (isOnline && zoomError) // Disable if online and there's a Zoom link error
+                            }
+                          >
+                            OK
+                          </button>
+</div>
                           </div>
                         </div>
                       )}
