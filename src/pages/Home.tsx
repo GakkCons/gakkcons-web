@@ -75,13 +75,11 @@ function Home() {
 
 
   const handleAccept = async () => {
-    // Format the dateTime before sending it
     const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
   
-    // Update appointmentData with the formatted date
     const updatedAppointmentData = {
       ...appointmentData,
-      scheduled_date: formattedDate, // Use the formatted date here
+      scheduled_date: formattedDate, 
     };
   
     console.log(updatedAppointmentData)
@@ -91,7 +89,6 @@ function Home() {
     };
   
     try {
-      // API request with the updated appointmentData
       const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, updatedAppointmentData, {
         headers: headers,
       });
@@ -112,17 +109,15 @@ function Home() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    // Allow free typing
     setAppointmentData({
       ...appointmentData,
       meet_link: value,
     });
 
-    // Validate only after user finishes typing (or based on other conditions)
     if (value && !/^(https?):\/\/[^\s$.?#].[^\s]*$/i.test(value)) {
       setZoomError('Please enter a valid URL.');
     } else {
-      setZoomError(''); // Clear error if the URL is valid
+      setZoomError('');
     }
   };
 
@@ -144,18 +139,16 @@ function Home() {
       console.log('Appointment updated successfully:', response.data);
       setShowAcceptModal(false);
       setViewDetails(false);
-      refetch();  // Refetch the appointments after updating
+      refetch();  
   
     } catch (error) {
       console.error('Error updating appointment:', error.message);
     }
   };
-    // Open the rejection modal
     const openRejectModal = () => {
       setShowRejectModal(true);
     };
   
-    // Close the rejection modal without taking action
     const closeRejectModal = () => {
       setShowRejectModal(false);
     };
@@ -206,13 +199,12 @@ function Home() {
     try {
       const response = await axios.post('appointments/report', reportData, {
         headers: {
-          'Authorization': `Bearer ${token}`, // Pass the token for authentication
+          'Authorization': `Bearer ${token}`, 
         },
       });
   
       console.log('Report submitted successfully:', response.data);
-      setShowReportModal(false); // Close the modal after successful report
-      // Optionally show a success message to the user
+      setShowReportModal(false); 
       alert(`Report ${selectedReason}  submitted successfully.`);
     } catch (error) {
       console.error('Error submitting report:', error);
@@ -222,14 +214,24 @@ function Home() {
   
 
   const currentDateTime = new Date();
-  currentDateTime.setSeconds(0); // Remove seconds to make it a clean minute
-  currentDateTime.setMilliseconds(0); // Remove milliseconds for consistency
-
+  currentDateTime.setSeconds(0);
+  currentDateTime.setMilliseconds(0);
+  
+  const startOfDay = new Date(currentDateTime);
+  startOfDay.setHours(0, 0, 0, 0); 
+  
   const endOfDay = new Date(currentDateTime);
-  endOfDay.setHours(23, 59, 59, 999); // Set to the last possible time of the day (11:59:59.999)
-
-  const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss.SSS'); // Format the date
-
+  endOfDay.setHours(23, 59, 59, 999); 
+  
+  const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss.SSS'); 
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
   return (
     <>
       <Header />
@@ -364,19 +366,19 @@ function Home() {
                             {/* <p className='bg-white rounded-md p-5 h-48 mb-5'>{selectedRequest.reason}</p> */}
 
                             <div className='mb-3 w-full'>
-                              <DatePicker
-                                id="datetime-picker"
-                                selected={appointmentData.dateTime}
-                                onChange={handleDateChange}
-                                showTimeSelect
-                                dateFormat="Pp"
-                                timeIntervals={15} // 15 minutes interval
-                                timeCaption="Time"
-                                className="bg-white border border-gray-300 rounded-md py-3 px-28 w-fit min-w-96  text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                minDate={currentDateTime} // Disable past dates
-                                minTime={currentDateTime} // Disable past times (on the selected date)
-                                maxTime={endOfDay} // Allow up to the end of the day
-                              />
+                            <DatePicker
+                            id="datetime-picker"
+                            selected={appointmentData.dateTime}
+                            onChange={handleDateChange}
+                            showTimeSelect
+                            dateFormat="Pp"
+                            timeIntervals={15}
+                            timeCaption="Time"
+                            className="bg-white border border-gray-300 rounded-md py-3 px-28 w-fit min-w-96 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            minDate={currentDateTime} 
+                            minTime={isToday(appointmentData.dateTime || currentDateTime) ? currentDateTime : startOfDay} 
+                            maxTime={endOfDay} 
+                          />
 
                             </div>
 
