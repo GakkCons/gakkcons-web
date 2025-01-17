@@ -191,7 +191,7 @@ function Profile() {
               }}
             >
               <div className='text-center mx-10 my-6 pt-5 sm:pt-5 lg:pt-0 xl:pt-0 md:pt-5 lg:absolute xl:absolute consultationmode' style={{ right: 0}}>
-                <h1 className='text-2xl font-bold mb-2'>CONSULTATION MODE:</h1>
+                <h1 className='text-2xl font-bold mb-2'>Consulation Mode:</h1>
                 <div className="flex justify-center items-center">
                   <button
                     className={`font-bold ${activeButtons.includes('Onsite') ? 'bg-blue-500 text-white' : ''}`}
@@ -203,7 +203,7 @@ function Profile() {
                     }}
                     onClick={() => handleButtonClick('Onsite')}
                   >
-                    ONSITE
+                    Onsite
                   </button>
 
                   <button
@@ -233,7 +233,7 @@ function Profile() {
                     }}
                     onClick={() => handleButtonClick('Online')}
                   >
-                    ONLINE
+                    Online
                   </button>
                 </div>
 
@@ -300,7 +300,7 @@ function Profile() {
             setIsEdit(false);
           }}
         >
-          BACK
+          Back
         </button>
       ) : (
         <button
@@ -310,7 +310,7 @@ function Profile() {
             setIsEdit(true);
           }}
         >
-          EDIT
+          Edit
         </button>
       )}
     </div>

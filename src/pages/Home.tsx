@@ -296,7 +296,7 @@ function Home() {
                 </div>
                         <div>
                           <h2 className="text-2xl font-bold">{selectedRequest.name}</h2>
-                          <p className='text-lg font-bold text-gray-700' >id no: {selectedRequest?.id_number || '20xxxxxx'}
+                          <p className='text-lg font-bold text-gray-700' >ID No: {selectedRequest?.id_number || '20xxxxxx'}
                           </p>
                         </div>
 
@@ -325,14 +325,14 @@ function Home() {
                       <div>
                         <FontAwesomeIcon className='text-2xl' icon={faCircleCheck} />
                       </div>
-                      <h2 className='font-bold tracking-wide text-base'>ACCEPT</h2>
+                      <h2 className='font-bold tracking-wide text-base'>Accept</h2>
                     </div>
 
                     <div className='text-white text-center py-3 md:px-6 lg:px-10 w-full md:w-auto' style={{background: 'rgba(223, 22, 22, 1)', borderRadius: '7px', cursor: 'pointer'}} onClick={openRejectModal}>
                       <div>
                         <FontAwesomeIcon className='text-2xl' icon={faCircleXmark} />
                       </div>
-                      <h2 className='font-bold tracking-wide text-base'>REJECT</h2>
+                      <h2 className='font-bold tracking-wide text-base'>Reject</h2>
                     </div>
 
                     </div>
