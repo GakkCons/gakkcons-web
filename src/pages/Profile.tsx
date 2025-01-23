@@ -169,7 +169,6 @@ function Profile() {
   };
   
 
-
   return (
     <>
       <Header />
@@ -191,7 +190,7 @@ function Profile() {
               }}
             >
               <div className='text-center mx-10 my-6 pt-5 sm:pt-5 lg:pt-0 xl:pt-0 md:pt-5 lg:absolute xl:absolute consultationmode' style={{ right: 0}}>
-                <h1 className='text-2xl font-bold mb-2'>Consulation Mode:</h1>
+                <h1 className='text-2xl font-bold mb-2'>Consultation Mode:</h1>
                 <div className="flex justify-center items-center">
                   <button
                     className={`font-bold ${activeButtons.includes('Onsite') ? 'bg-blue-500 text-white' : ''}`}
@@ -382,7 +381,7 @@ function Profile() {
                           }}
                         />
                       </div>
-                      <div className="mb-2">
+                      {/* <div className="mb-2">
                         <label htmlFor="idno" className="block text-sm font-medium text-gray-700 mb-1">
                           ID Number
                         </label>
@@ -397,7 +396,7 @@ function Profile() {
                             })
                           }}                          
                         />
-                      </div>
+                      </div> */}
                       <div className="mb-2">
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                           New Password

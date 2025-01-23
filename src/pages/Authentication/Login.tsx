@@ -7,6 +7,11 @@ import axios from '../plugins/axios';
 import { useNavigate } from 'react-router';
 import Error from '../components/error';
 
+
+
+
+
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -20,7 +25,34 @@ const Login: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isErrorOpen, setIsErrorOpen] = useState<boolean>(false);
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [registerVerify, setRegisterVerify] = useState({
+    email: "",
+    verificationCode: "",
+    codeType: "signup_verify_user"
+  })
 
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+
+
+  const toggleVerificationModal = () => {
+    setIsVerificationModalOpen(!isVerificationModalOpen);
+  };
+
+  const [registerData, setRegisterData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
+
+  const handleRegisterModalToggle = () => {
+    setIsRegisterModalOpen(!isRegisterModalOpen);
+  };
+
+
+  
   const authToken = queryClient.getQueryData(['authToken']) || sessionStorage.getItem('authToken');
 
   useEffect(() => {
@@ -74,6 +106,78 @@ const Login: React.FC = () => {
   const handleLogin = () => {
     loginMutation.mutate();
   };
+
+  const registerMutation = useMutation({
+    mutationFn: async (userData: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      password: string;
+    }) => {
+      const response = await axios.post("users/signup", userData);
+      return response.data;
+    },
+    onSuccess: () => {
+      alert("Registration successful!");
+      handleRegisterModalToggle(); // Close the modal after success
+      toggleVerificationModal(); // Open the verification modal
+    },
+    onError: (error: any) => {
+      console.error("Registration failed:", error.response?.data || error.message);
+      setErrorMessage("Registration failed. Please try again.");
+    },
+  });
+
+  const handleRegister = () => {
+    const { firstName, lastName, email, password, confirmPassword } = registerData;
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    if (!firstName || !lastName || !email || !password) {
+      setErrorMessage("All fields are required.");
+      return;
+    }
+
+    // Clear error message before mutation
+    setErrorMessage("");
+
+    // Execute the mutation
+    registerMutation.mutate({ firstName, lastName, email, password });
+  };
+
+  const handleVerification = async () => {
+    try {
+      const response = await axios.post('users/verify', registerVerify);
+      alert("Verification successful!");
+      
+      setRegisterVerify({
+        email: "",
+        verificationCode: "",
+        codeType: "signup_verify_user"
+      })
+
+      setRegisterData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+      })
+
+      console.log("Response:", response.data);
+
+
+
+      // Add any additional logic after successful verification, e.g., closing modal
+    } catch (error) {
+      console.error("Verification failed:", error.response?.data || error.message);
+      alert("Verification failed. Please try again.");
+    }
+  };
+  
 
   const handleForgotPassword = () => {
     axios
@@ -274,13 +378,152 @@ const Login: React.FC = () => {
 
           <div className="text-right">
             <button
-              className="w-40 bg-black text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+              className="w-full bg-black text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
               onClick={handleLogin}
               disabled={loginMutation.isLoading}
             >
               {loginMutation.isLoading ? 'Loading...' : 'LOGIN'}
             </button>
           </div>
+
+          <div className="text-right mt-5">
+        <button style={{color: 'blue', fontSize: '16px'}}  onClick={handleRegisterModalToggle} >Don't Have an Account? Register Here!</button>
+          </div>
+
+          {isRegisterModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg min-w-[500px]">
+                <h2 className="text-lg font-semibold mb-4">Register</h2>
+
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={registerData.firstName}
+                    onChange={(e) => {
+                      setRegisterData({
+                        ...registerData, firstName: e.target.value
+                      })
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={registerData.lastName}
+                    onChange={(e) => {
+                      setRegisterData({
+                        ...registerData, lastName: e.target.value
+                      })
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={registerData.email}
+                    onChange={(e) => {
+                      setRegisterData({
+                        ...registerData, email: e.target.value
+                      })
+                      setRegisterVerify({
+                        ...registerVerify, email: e.target.value
+                      })
+
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={registerData.password}
+                    onChange={(e) => {
+                      setRegisterData({
+                        ...registerData, password: e.target.value
+                      })
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <input
+                    type="password"
+                    placeholder="Retype Password"
+                    value={registerData.confirmPassword}
+                    onChange={(e) => {
+                      setRegisterData({
+                        ...registerData, confirmPassword: e.target.value
+                      })
+                    }}
+                    className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={handleRegisterModalToggle}
+                    className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleRegister}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Register
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+{isVerificationModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg min-w-[400px]">
+            <h2 className="text-lg font-semibold mb-4">Verify Your Email</h2>
+
+            {errorMessage && (
+              <div className="text-red-500 text-sm mb-4">{errorMessage}</div>
+            )}
+
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Verification Code"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                className="w-full px-4 py-2 border rounded-lg border-gray-400 text-black focus:outline-none focus:ring-2 focus:ring-gray-400"
+              />
+            </div>
+
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={toggleVerificationModal}
+                className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleVerification}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                Verify
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
           <Error isOpen={isErrorOpen} onClose={closeErrorModal} message={errorMessage} />
         </div>
       </div>

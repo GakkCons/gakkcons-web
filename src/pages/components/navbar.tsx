@@ -109,27 +109,9 @@ const Navbar: React.FC = () => {
                   </div>
                 </Link>
              </li>
-             <li>
-              <Link
-                to="/profile"
-                className={`block shadow text-black hover:bg-blue-700 ${
-                  location.pathname === '/profile' ? 'border-l-8 border-black bg-blue-100' : ''
-                }`}
-                style={{ borderRadius: '7px' }}
-              >
-                <div className="flex content-between items-center p-3">
-                  <img
-                    src={profilelogo}
-                    style={{ width: '30px', height: '30px' }}
-                    className="ml-1 mr-2"
-                    alt=""
-                  />
-                  <h1 className="text-lg font-bold">Profile</h1>
-                </div>
-              </Link>
-            </li>
 
-            <li style={{ marginTop: '40px' }}>
+
+            <li >
                 <Link
                   to="/report"
                   className={`block shadow text-black hover:bg-blue-700 ${
@@ -147,7 +129,27 @@ const Navbar: React.FC = () => {
                     <h1 className="text-lg font-bold">Report Status</h1>
                   </div>
                 </Link>
-              </li>            
+              </li>    
+
+                           <li>
+              <Link
+                to="/profile"
+                className={`block shadow text-black hover:bg-blue-700 ${
+                  location.pathname === '/profile' ? 'border-l-8 border-black bg-blue-100' : ''
+                }`}
+                style={{ borderRadius: '7px' }}
+              >
+                <div className="flex content-between items-center p-3">
+                  <img
+                    src={profilelogo}
+                    style={{ width: '30px', height: '30px' }}
+                    className="ml-1 mr-2"
+                    alt=""
+                  />
+                  <h1 className="text-lg font-bold">Profile</h1>
+                </div>
+              </Link>
+            </li>        
             </>
             )}
 

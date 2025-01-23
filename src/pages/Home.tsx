@@ -295,7 +295,7 @@ function Home() {
                   <FontAwesomeIcon icon={faUser} className='text-2xl' aria-label="User Icon" />
                 </div>
                         <div>
-                          <h2 className="text-2xl font-bold">{selectedRequest.name}</h2>
+                          <h2 className="text-2xl font-bold">{selectedRequest.firstname} {selectedRequest.lastname}</h2>
                           <p className='text-lg font-bold text-gray-700' >ID No: {selectedRequest?.id_number || '20xxxxxx'}
                           </p>
                         </div>
@@ -533,19 +533,7 @@ function Home() {
                         onClick={() => handleRequestClick(request)}
                       >
                         <div className="col-span-3 px-0 md:px-6 flex flex-col md:flex-row items-center gap-3 text-center md:text-left">
-                          <span
-                            className="w-5 h-5 md:w-6 md:h-6 lg:w-8 lg:h-8 md:mr-5 rounded-full"
-                            style={{
-                              background:
-                                request.status === 'De'
-                                  ? 'rgba(205, 22, 22, 1)'
-                                  : request.status === 'Unavailable'
-                                  ? 'rgba(21, 179, 27, 1)' 
-                                  : 'rgba(217, 108, 108, 1)',
-                              flexShrink: 0,
-                            }}
-                          ></span>
-
+            
                           <span
                             className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 md:mr-2 md:ml-2 lg:ml-5 rounded-full"
                             style={{

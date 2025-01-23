@@ -18,6 +18,8 @@ function App() {
 
         {/* Protected Routes */}
         <Route element={<ProtectedRoutes requiredRoles={['admin', 'faculty']} />}>
+        <Route element={<ManageAccount />} path="/home" />
+
           <Route element={<Profile />} path="/profile" />
         </Route>
 
