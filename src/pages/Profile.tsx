@@ -178,7 +178,7 @@ function Profile() {
       
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4 mb-2 ">
       <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
-      <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{position: 'relative'}}>
+          <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{position: 'relative'}}>
    
             <Navbar />
           </div>
@@ -201,7 +201,7 @@ function Profile() {
                       borderTopLeftRadius: '7px',
                       borderBottomLeftRadius: '7px',
                     }}
-                    onClick={() => handleButtonClick('Onsite')}
+                    onClick={() => handleButtonClick('Onsite')}  
                   >
                     Onsite
                   </button>
@@ -535,7 +535,7 @@ function Profile() {
 
             </div>
           </div>
-        </div>
+      </div>
 
 
 
