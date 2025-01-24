@@ -90,7 +90,7 @@ const Login: React.FC = () => {
         // Clear TanStack Query cache
         queryClient.removeQueries(['authToken']);
         queryClient.removeQueries(['userType']);
-      } else if (response.userType === 'admin') {
+      } else if (response.userType === 'faculty') {
         navigate('/accounts');
 
       } else {
