@@ -110,6 +110,7 @@ function ManageAccount() {
         id_number: '',
         subjectId: '',
       });
+      isUsersRefetch();
       setIsModalOpen(false);
     })
     .catch((error) => {
@@ -163,17 +164,17 @@ function ManageAccount() {
   
   const handleDelete = async (userId: number) => {
     try {
-      await axios.delete(`/users/delete/${userId}`, {
+      await axios.put(`/users/delete/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`, // Ensure you pass the token
         },
       });
-      alert('User deleted successfully.');
-      closeDeleteModal(); // Close the confirmation modal after deletion
+      alert('User successfully deactivated.');
+      closeDeleteModal(); // Close the confirmation modal after deactivation
       isUsersRefetch(); // Refetch users to update the table
     } catch (error) {
-      console.error('Error deleting user:', error);
-      alert('Failed to delete the user. Please try again.');
+      console.error('Error deactivating user:', error);
+      alert('Failed to deactivate the user. Please try again.');
     }
   };
   
@@ -277,7 +278,7 @@ function ManageAccount() {
                             />
                           </div>
                         )}
-
+{/* 
                         {data.userType === 'faculty' && (
                           <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
@@ -294,7 +295,7 @@ function ManageAccount() {
                               ))}
                             </select>
                           </div>
-                        )}
+                        )} */}
 
                         <div className="flex justify-end">
                           <button
