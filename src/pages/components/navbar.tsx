@@ -16,6 +16,8 @@ const Navbar: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
+
+  console.log(userType)
   return (
     <nav className="m-0" style={{ width: '100%' }}>
       <div className="flex flex-col">
@@ -88,7 +90,7 @@ const Navbar: React.FC = () => {
             )}
 
 
-{userType === 'admin' && (
+            {userType === 'admin' && (
             <>
               <li style={{ marginTop: '0px' }}>
                 <Link

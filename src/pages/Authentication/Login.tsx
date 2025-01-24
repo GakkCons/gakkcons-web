@@ -88,8 +88,11 @@ const Login: React.FC = () => {
         sessionStorage.removeItem("userType");
 
         // Clear TanStack Query cache
-        queryClient.removeQueries(["authToken"]);
-        queryClient.removeQueries(["userType"]);
+        queryClient.removeQueries(['authToken']);
+        queryClient.removeQueries(['userType']);
+      } else if (response.userType === 'admin') {
+        navigate('/accounts');
+
       } else {
         navigate("/home");
       }
