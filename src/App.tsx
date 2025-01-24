@@ -21,7 +21,7 @@ function App() {
           <Route element={<Profile />} path="/profile" />
         </Route>
 
-        <Route element={<ProtectedRoutes requiredRoles={['admin']} />}>
+        <Route element={<ProtectedRoutes requiredRoles={['faculty']} />}>
           <Route element={<ConsultationRequest />} path="/home" />
           <Route element={<ConsultationQueue />} path="/consultationqueue" />
           <Route element={<Profile />} path="/profile" />
@@ -29,7 +29,7 @@ function App() {
 
 
         {/* Admin-only Route */}
-        <Route element={<ProtectedRoutes requiredRoles={['faculty']} />}>
+        <Route element={<ProtectedRoutes requiredRoles={['admin']} />}>
           <Route path='/accounts' element={<ManageAccount />} />
           <Route path="/report" element={<Report />} /> {/* Admin-only route */}
         </Route>

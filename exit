@@ -1,0 +1,257 @@
+[33mcommit a2733cfd418d821e292ff81ca7e141a20b6a3c72[m[33m ([m[1;36mHEAD[m[33m, [m[1;31morigin/Main[m[33m)[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 17:53:07 2025 +0800
+
+    Solved
+
+[33mcommit 5ec531988c3db563310463adfcf2112316415dda[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 17:05:25 2025 +0800
+
+    Updated a
+
+[33mcommit aab83ec69b2a0cff7e30d6181df23d2b17d5e914[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 17:04:04 2025 +0800
+
+    Updated
+
+[33mcommit 0c16311f846b2ce848ad77dc9685a62e644c0eb3[m
+Merge: 40e3f22 ab1cfff
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Fri Jan 24 05:24:28 2025 +0000
+
+    Merge pull request #9 from JandreiX/main
+    
+    Merge branch 'main' of https://github.com/JandreiX/gakkcons-web
+
+[33mcommit 40e3f22f22260edcd0744044f6acef9f9e1529ee[m
+Merge: 7b0a82d 1076807
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Fri Jan 24 04:29:53 2025 +0000
+
+    Merge pull request #8 from JandreiX/main
+    
+    Added warning for teacher
+
+[33mcommit ab1cfff9990f173d1be8ab3980c9227caea082b7[m
+Merge: 7b0a82d 1076807
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Fri Jan 24 11:51:31 2025 +0800
+
+    Merge branch 'main' of https://github.com/JandreiX/gakkcons-web
+
+[33mcommit 10768079b2aab3654c49ba96c3ce7d2c485a523f[m[33m ([m[1;31morigin/debug[m[33m, [m[1;32mdebug[m[33m)[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 11:39:13 2025 +0800
+
+    Added warning for teacher
+
+[33mcommit 7b0a82dbe2efb9af7c602c193a6ecb7bc3c5d58d[m
+Merge: 84a475c c0e51c4
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Fri Jan 24 01:39:39 2025 +0000
+
+    Merge pull request #7 from JandreiX/debug
+    
+    Debug
+
+[33mcommit c0e51c4dfa8d83c9822ee36520e4b7d6a9a8d184[m
+Merge: 978dea0 84a475c
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 09:38:23 2025 +0800
+
+    Saved Work
+
+[33mcommit 978dea09eacdb2afe3a9063aadd6ce3c3499fdfc[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 09:36:23 2025 +0800
+
+    Fixed Bug on user accounts
+
+[33mcommit 84a475c3b5e1274edc2425c1a509b27f314f6f16[m
+Author: Margie Fabores <faboresm@gmail.com>
+Date:   Fri Jan 24 09:04:08 2025 +0800
+
+    added verification on registration
+
+[33mcommit 01954a5fa96087951cb7728d1b8b1d5dbfac6b29[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 04:40:45 2025 +0800
+
+    Added all revisions
+
+[33mcommit b4d162d9c185317bb7e369b2b34186d9ac60ad44[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 02:00:18 2025 +0800
+
+    Change axios
+
+[33mcommit 69f5dcfae9868f0c4433a83d6af749e81a871d4b[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Fri Jan 24 01:59:29 2025 +0800
+
+    Added Manage Accounts
+
+[33mcommit 9bde6b069e676d6777288c1468f362ed38d6a527[m
+Merge: 3eb4b09 1fd605b
+Author: Kent Christian E. Cagadas <46562432+KC878@users.noreply.github.com>
+Date:   Fri Jan 17 10:44:19 2025 +0800
+
+    Merge pull request #6 from JandreiX/fixFontsConsistency
+    
+    Fix fonts inconsistency
+
+[33mcommit 3eb4b092d083e0dd6691f5d1106e8909934ec993[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Fri Jan 17 10:40:13 2025 +0000
+
+    Update docker-compose.yml
+
+[33mcommit 1fd605bc88ba4ca56f43fe42bb118398128a7068[m[33m ([m[1;31morigin/fixFontsConsistency[m[33m)[m
+Merge: 8bbe6d3 3eb4b09
+Author: Kent Christian E. Cagadas <46562432+KC878@users.noreply.github.com>
+Date:   Fri Jan 17 10:44:07 2025 +0800
+
+    Merge branch 'Main' into fixFontsConsistency
+
+[33mcommit f89ee44591141ef7923d8bb642f0c894f1f63b83[m
+Merge: 1761d91 f0de34c
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Thu Jan 16 15:23:00 2025 +0000
+
+    Merge pull request #5 from KC878/patch-1
+    
+    Update axios.tsx - append "api"
+
+[33mcommit 8bbe6d3c848fe61a3344f2264aa12bdee28407e4[m
+Author: Kent Chrisitan <kentcagadas19@gmail.com>
+Date:   Thu Jan 16 23:08:30 2025 +0800
+
+    Fix fonts inconsistency
+
+[33mcommit 1761d910eeabc90f9887bb95e80d98a68f9b1002[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Thu Jan 16 21:15:33 2025 +0800
+
+    Fixed toggle mode
+
+[33mcommit 10bb897795e00a2308b11906042bd8c0cda21344[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Thu Jan 16 21:01:18 2025 +0800
+
+    add condition on zoomlink
+
+[33mcommit 749d8aab003f24c289196509145369df05945707[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Thu Jan 16 20:55:00 2025 +0800
+
+    FIXED BUG ON DATEPICKER
+
+[33mcommit f0de34cb1df87ed2618c78d7eb99990215c7d6e9[m
+Author: Kent Christian E. Cagadas <46562432+KC878@users.noreply.github.com>
+Date:   Thu Jan 16 14:36:51 2025 +0800
+
+    Update axios.tsx - append "api"
+
+[33mcommit b18d07e48fa2a8dcff9d398a071261c372e863e3[m
+Author: JandreiX <jiggerandreigobenza@gmail.com>
+Date:   Thu Jan 16 00:13:14 2025 +0800
+
+    add revision
+
+[33mcommit 2f866093634a539b253087f383f0749a806edafa[m
+Merge: b12c492 ef0f08a
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 14:18:47 2025 +0000
+
+    Merge pull request #4 from JandreiX/dev
+    
+    Updated app URL - To point towards the API it's hosted on
+
+[33mcommit ef0f08accfb1c1cbfd5042b892b65b7b6fe35370[m[33m ([m[1;31morigin/dev[m[33m)[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 22:16:38 2025 +0000
+
+    Updated app URL - To point towards the API it's hosted on
+
+[33mcommit b12c4923a3b8599b987f4df704d7787277334dc5[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 21:57:29 2025 +0000
+
+    Dockerization - Update on dockerfile and docker-compose
+
+[33mcommit eab033eddaa603eb62fd9b63e2eeaf7c395c36ff[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 21:50:07 2025 +0000
+
+    Dockerization - Update on dockerfile and docker-compose
+
+[33mcommit b472a8f8e8697a11874950ffcf70cad520179500[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 15:09:15 2025 +0000
+
+    Update docker-compose.yml
+
+[33mcommit 998bd7b9c22592d1d304d94371956026c00ea50b[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 15:09:10 2025 +0000
+
+    Update .dockerignore
+
+[33mcommit 4b82278f5fb3a7f44c54de7dbfba404d01fcdb73[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 11:33:22 2025 +0000
+
+    Update package.json
+
+[33mcommit 33c4656ef629598e1a8551d08a601dc0ffd2275e[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 11:33:14 2025 +0000
+
+    Update Dockerfile
+
+[33mcommit fc07948bc6cd21f03ea24d3794298bb1985e2098[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 11:11:46 2025 +0000
+
+    Dockerization - changed dockerfile contents
+
+[33mcommit ce1f42818e3e557a75cd07a80a81ec216f48939a[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 01:05:10 2025 +0000
+
+    Update docker-file.yml
+
+[33mcommit 3d0c2c0c8cd3e07fb617961a3006c7dbd5377424[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 00:59:14 2025 +0000
+
+    Update Dockerfile
+    
+    placed -g vite to address issues from deployment
+
+[33mcommit 25c68a5ed6f464a3eb2616ff31a472c14e8cc306[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Tue Jan 14 00:48:09 2025 +0000
+
+    Dockerization - Added Dockerfile and docker-compose.yml
+    
+    Added dockerfile, and docker-compose
+
+[33mcommit 1cab0547dacf620911a0599b7fce0c781a3c6926[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Mon Jan 13 23:42:31 2025 +0000
+
+    Update .gitignore
+
+[33mcommit 0c3bf0d8397ee1fb32c31b7a453fe593dfee6e9b[m
+Author: JandreiX <102495959+JandreiX@users.noreply.github.com>
+Date:   Mon Jan 13 23:42:00 2025 +0000
+
+    Removed unused page and added Dockerfile
+    
+    Sidebar.tsx has no uses so it was removed, added Dockerfile for deployment
+
+[33mcommit 81042dc6d5badd0d01cf8ea365e9fd344dfa9345[m
+Author: JandreiX <jiggerandrei

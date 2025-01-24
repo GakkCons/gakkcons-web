@@ -30,7 +30,6 @@ function ManageAccount() {
     lastName: '',
     email: '',
     password: '',
-    userType: '',
     subjectId: '',
     id_number: '',
   });
@@ -105,10 +104,7 @@ function ManageAccount() {
         firstName: '',
         lastName: '',
         email: '',
-        password: '',
-        userType: '',
-        id_number: '',
-        subjectId: '',
+        password: ''
       });
       isUsersRefetch();
       setIsModalOpen(false);

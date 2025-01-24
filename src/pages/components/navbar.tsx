@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
           <ul className="flex flex-col space-y-1 mt-4">
 
 
-            {userType === 'admin' && (
+            {userType === 'faculty' && (
               <>
               <li>
               <Link
@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
             )}
 
 
-            {userType === 'faculty' && (
+            {userType === 'admin' && (
             <>
               <li style={{ marginTop: '0px' }}>
                 <Link
