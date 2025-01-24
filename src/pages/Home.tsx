@@ -34,6 +34,10 @@ function Home() {
   const [selectedReason, setSelectedReason] = useState('')
   const [showRejectModal, setShowRejectModal] = useState(false);
 
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [warningMessage, setWarningMessage] = useState('');
+  
+
   const token = sessionStorage.getItem('authToken');
 
   const [appointmentData, setAppointmentData] = useState({
@@ -74,43 +78,147 @@ function Home() {
   };
 
 
+  // const handleAccept = async () => {
+  //   const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
+  
+  //   const updatedAppointmentData = {
+  //     ...appointmentData,
+  //     scheduled_date: formattedDate, 
+  //   };
+  
+  //   console.log(updatedAppointmentData)
+  //   const headers = {
+  //     'Content-Type': 'application/json',
+  //     'Authorization': `${token}`,
+  //   };
+  
+  //   try {
+  //     const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, updatedAppointmentData, {
+  //       headers: headers,
+  //     });
+  
+  //     console.log('Appointment updated successfully:', response.data);
+  //     setShowAcceptModal(false);
+  //     setViewDetails(false);
+  //     refetch();
+  //     setIsOnline(false);
+  //     setAppointmentData({
+  //       status: "Confirmed",
+  //       meet_link: "",
+  //       mode: "onsite",  
+  //       dateTime: new Date() 
+  //     })
+  //     setSelectedRequest('')
+  
+  //   } catch (error) {
+  //     console.error('Error updating appointment:', error.message);
+  //     console.log(appointmentData);
+  //   }
+  // };
+
+  // const handleAccept = async () => {
+  //   const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
+  
+  //   const updatedAppointmentData = {
+  //     ...appointmentData,
+  //     scheduled_date: formattedDate,
+  //   };
+  
+  //   console.log(updatedAppointmentData);
+  //   const headers = {
+  //     'Content-Type': 'application/json',
+  //     Authorization: `${token}`,
+  //   };
+  
+  //   try {
+  //     const response = await axios.put(
+  //       `/appointments/update/${selectedRequest.appointment_id}`,
+  //       updatedAppointmentData,
+  //       { headers: headers }
+  //     );
+  
+  //     console.log('Appointment updated successfully:', response.data);
+  
+  //     // Check if there's a warning in the response
+  //     if (response.data.warning) {
+  //       const userConfirmed = window.confirm(
+  //         `Warning: ${response.data.warning}\nWould you like to proceed?`
+  //       );
+  //       if (!userConfirmed) {
+  //         // User chose not to proceed
+  //         return;
+  //       }
+  //     }
+  
+  //     // Proceed with the post-update logic
+  //     setShowAcceptModal(false);
+  //     setViewDetails(false);
+  //     refetch();
+  //     setIsOnline(false);
+  //     setAppointmentData({
+  //       status: 'Confirmed',
+  //       meet_link: '',
+  //       mode: 'onsite',
+  //       dateTime: new Date(),
+  //     });
+  //     setSelectedRequest('');
+  //   } catch (error) {
+  //     console.error('Error updating appointment:', error.message);
+  //     console.log(appointmentData);
+  //   }
+  // };
+  
+
   const handleAccept = async () => {
     const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
   
     const updatedAppointmentData = {
       ...appointmentData,
-      scheduled_date: formattedDate, 
+      scheduled_date: formattedDate,
     };
   
-    console.log(updatedAppointmentData)
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': `${token}`,
+      Authorization: `${token}`,
     };
   
     try {
-      const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, updatedAppointmentData, {
-        headers: headers,
-      });
+      const response = await axios.put(
+        `/appointments/update/${selectedRequest.appointment_id}`,
+        updatedAppointmentData,
+        { headers: headers }
+      );
   
       console.log('Appointment updated successfully:', response.data);
-      setShowAcceptModal(false);
-      setViewDetails(false);
-      refetch();
-      setIsOnline(false);
-      setAppointmentData({
-        status: "Confirmed",
-        meet_link: "",
-        mode: "onsite",  
-        dateTime: new Date() 
-      })
-      setSelectedRequest('')
   
+      // Check for warning
+      if (response.data.warning) {
+        setWarningMessage(response.data.warning);
+        setShowWarningModal(true);
+        return; // Stop further actions until the user responds to the warning modal
+      }
+  
+      proceedWithUpdate();
     } catch (error) {
       console.error('Error updating appointment:', error.message);
-      console.log(appointmentData);
     }
   };
+  
+  const proceedWithUpdate = () => {
+    setShowAcceptModal(false);
+    setViewDetails(false);
+    refetch();
+    setIsOnline(false);
+    setAppointmentData({
+      status: 'Confirmed',
+      meet_link: '',
+      mode: 'onsite',
+      dateTime: new Date(),
+    });
+    setSelectedRequest('');
+  };
+  
+
 
   const [zoomError, setZoomError] = useState('Enter a valid zoom link');
 
@@ -405,7 +513,10 @@ function Home() {
                             
 
                             )}
+                            
                             <div className="flex justify-center mt-2">
+
+                              
                           <button
                             className="px-4 py-2 bg-green-500 text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
                             onClick={handleAccept}
@@ -417,9 +528,41 @@ function Home() {
                             OK
                           </button>
 </div>
+
+
                           </div>
                         </div>
                       )}
+
+{showWarningModal && (
+  <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <h2 className="text-2xl font-semibold text-center mb-4">Warning</h2>
+      <p className="text-gray-700 text-center mb-6">{warningMessage}</p>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={() => {
+            setShowWarningModal(false); // Close the modal
+            proceedWithUpdate(); // Proceed with the update
+          }}
+          className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Proceed
+        </button>
+        <button
+          onClick={() => {
+            setShowWarningModal(false); // Close the modal without proceeding
+          }}
+          className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
                       {showReportModal && (
                         <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 px-4'>
@@ -562,6 +705,9 @@ function Home() {
 
 
               )}
+
+
+
             </div>
           </div>
         </div>
