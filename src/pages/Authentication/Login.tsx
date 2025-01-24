@@ -189,7 +189,9 @@ const Login: React.FC = () => {
       });
 
       console.log("Response:", response.data);
+      alert('Account Successully Verified!')
       setIsVerificationModalOpen(false);
+
 
       // Add any additional logic after successful verification, e.g., closing modal
     } catch (error) {
