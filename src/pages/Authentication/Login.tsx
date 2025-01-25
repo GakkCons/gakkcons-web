@@ -88,12 +88,11 @@ const Login: React.FC = () => {
         sessionStorage.removeItem("userType");
 
         // Clear TanStack Query cache
-        queryClient.removeQueries(['authToken']);
-        queryClient.removeQueries(['userType']);
-      } else if (response.userType === 'admin') {
-        navigate('/accounts');
-
-      } else if (response.userType === 'faculty') {
+        queryClient.removeQueries(["authToken"]);
+        queryClient.removeQueries(["userType"]);
+      } else if (response.userType === "admin") {
+        navigate("/accounts");
+      } else if (response.userType === "faculty") {
         navigate("/home");
       }
     },
@@ -105,7 +104,9 @@ const Login: React.FC = () => {
         return;
       }
       console.log("Login failed:", error.response.data.message);
-      setErrorMessage("Login failed: An unexpected error occurred.");
+      setErrorMessage(
+        error.response.data.message || "An unexpected error occured"
+      );
       setIsErrorOpen(true);
     },
   });
@@ -189,9 +190,8 @@ const Login: React.FC = () => {
       });
 
       console.log("Response:", response.data);
-      alert('Account Successully Verified!')
+      alert("Account Successully Verified!");
       setIsVerificationModalOpen(false);
-
 
       // Add any additional logic after successful verification, e.g., closing modal
     } catch (error) {
