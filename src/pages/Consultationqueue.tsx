@@ -161,35 +161,34 @@ const sortedGroupedAppointments = Object.keys(groupedAppointments)
                   overflowY: 'scroll',
                 }}
               >
-                <div>
-                {Object.keys(sortedGroupedAppointments).length === 0 ? (
-  <p className="text-center text-gray-500">No Requests Available</p>
-) : (
-  Object.keys(sortedGroupedAppointments).map((date, index) => (
-    <div key={index}>
-      <h2 className="text-lg font-bold mb-2">{date}</h2>
-      {sortedGroupedAppointments[date].map((request) => (
-        <div key={request.appointment_id} className="h-auto p-1 bg-[#d1c8c3] rounded-lg mb-2">
-          <div className="flex justify-around items-center gap-12 m-2">
-            <div className="flex justify-around items-center gap-6">
-              <div className="p-3 m-auto border-2 border-black rounded-full">
-                <FontAwesomeIcon icon={faUser} className="text-2xl" aria-label="User Icon" />
-              </div>
-              <p className="text-sm font-bold">{request.firstname} {request.lastname}</p>
-            </div>
-            <div className="bg-white p-2 rounded-lg text-center">
-              <h1 className="font-bold text-1xl tracking-wider text-green-700">
-                {new Date(request.appointment_timestamp).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                }).replace(/\s/, '')} {/* Removes the space between the time and AM/PM */}
-              </h1>
-            </div>
-
-            
-            <div className="text-center mt-2 flex-grow max-w-xs">
-                  <h1 className="text-sm font-medium" style={{maxWidth: 300}}>
+<div >
+  {Object.keys(sortedGroupedAppointments).length === 0 ? (
+    <p className="text-center text-gray-500">No Requests Available</p>
+  ) : (
+    Object.keys(sortedGroupedAppointments).map((date, index) => (
+      <div key={index}>
+        <h2 className="text-lg font-bold mb-2">{date}</h2>
+        <div className="overflow-x-auto">
+          {sortedGroupedAppointments[date].map((request) => (
+            <div key={request.appointment_id} className="h-auto p-1 bg-[#d1c8c3] rounded-lg mb-2">
+              <div className="grid grid-cols-6 gap-4 textc items-center m-2">
+                <div className="col-span-2 flex items-center gap-4">
+                  <div className="p-3 border-2 border-black rounded-full">
+                    <FontAwesomeIcon icon={faUser} className="text-2xl" aria-label="User Icon" />
+                  </div>
+                  <p className="text-sm font-bold">{request.firstname} {request.lastname}</p>
+                </div>
+                <div className="text-center">
+                  <h1 className="font-bold text-1xl tracking-wider text-green-700">
+                    {new Date(request.appointment_timestamp).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                    }).replace(/\s/, '')}
+                  </h1>
+                </div>
+                <div className="text-center col-span-2">
+                  <h1 className="text-sm font-medium" style={{maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis'}}>
                     {request.reason.length > 10 ? (
                       <>
                         {expandedReasonId === request.appointment_id
@@ -209,53 +208,52 @@ const sortedGroupedAppointments = Object.keys(groupedAppointments)
                     )}
                   </h1>
                 </div>
+                <div className="flex justify-center">
+                  <button
+                    className="px-3 py-1 rounded-md bg-green-700 text-white"
+                    aria-label="Mark as done"
+                    onClick={toggleDoneModal} // Open modal
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
 
-
-                    <div className="flex justify-end mr-2">
+              {showDoneModal && (
+                <div
+                  className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
+                  style={{ backdropFilter: 'blur(1px)' }}
+                >
+                  <div
+                    className="bg-white p-6 rounded-lg max-w-sm w-full"
+                    style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                  >
+                    <h2 className="text-center text-lg font-semibold mb-4">Are you sure you want to complete this request?</h2>
+                    <div className="flex justify-center space-x-4">
                       <button
-                        className="px-3 py-1 rounded-md bg-green-700 text-white"
-                        aria-label="Mark as done"
-                        onClick={toggleDoneModal} // Open modal
+                        onClick={() => handleDone(request.appointment_id)} // Pass appointment_id
+                        className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
                       >
-                        Done
+                        Confirm
+                      </button>
+                      <button
+                        onClick={toggleDoneModal}
+                        className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-500"
+                      >
+                        Cancel
                       </button>
                     </div>
                   </div>
-
-                  {showDoneModal && (
-                    <div
-                      className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
-                      style={{ backdropFilter: 'blur(1px)' }}
-                    >
-                      <div
-                        className="bg-white p-6 rounded-lg max-w-sm w-full"
-                        style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                      >
-                        <h2 className="text-center text-lg font-semibold mb-4">Are you sure you want to complete this request?</h2>
-                        <div className="flex justify-center space-x-4">
-                          <button
-                            onClick={() => handleDone(request.appointment_id)} // Pass appointment_id
-                            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
-                          >
-                            Confirm
-                          </button>
-                          <button
-                            onClick={toggleDoneModal}
-                            className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-500"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ))}
+              )}
             </div>
-          ))
-        )}
+          ))}
+        </div>
+      </div>
+    ))
+  )}
+</div>
 
-                </div>
               </div>
         </div>
 
