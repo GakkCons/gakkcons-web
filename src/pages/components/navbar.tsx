@@ -6,11 +6,40 @@ import checklist from '../../assets/images/listchecklist.png';
 import profilelogo from '../../assets/images/profilelogo.png';
 import report from '../../assets/images/barchar.png';
 import useraccount from '../../assets/images/qwe.png';
+import axios from '../plugins/axios';
+import { useQuery } from '@tanstack/react-query';
+
+// Function to fetch appointments
+const fetchAppointments = async (token: string) => {
+  const response = await axios.get('/appointments', {
+    headers: {
+      'Authorization': `Bearer ${token}`, // Use the actual token here
+    },
+  });
+  return response.data;
+};
+
+
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();  // Track the current path
   const userType = sessionStorage.getItem('userType');  // Get userType from sessionStorage (or query client if you're using TanStack query)
+
+  const token = sessionStorage.getItem('authToken');
+
+  const { data, error, isLoading, refetch } = useQuery({
+    queryKey: ['appointments'],
+    queryFn: () => fetchAppointments(token),
+    retry: false,
+    enabled: !!token,
+  });
+
+  console.log('navbar', data)
+
+  const pendingAppointmentsCount = data?.filter((appointment: any) => appointment.status === 'Pending').length || 0;
+  const confirmedAppoinmentsCount = data?.filter((appointment: any) => appointment.status === 'Confirmed').length || 0;
+
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -35,14 +64,21 @@ const Navbar: React.FC = () => {
                 }`}
                 style={{ borderRadius: '7px' }}
               >
-                <div className="flex content-between items-center p-3">
-                  <img
-                    src={addmessageicon}
-                    style={{ width: '30px', height: '30px' }}
-                    className="ml-1 mr-2"
-                    alt=""
-                  />
-                  <h1 className="text-lg font-bold">Consultation Request</h1>
+                <div className="flex justify-between items-center gap-3 p-3 ">
+                  <div className='flex content-between'>
+                    <img
+                      src={addmessageicon}
+                      style={{ width: '30px', height: '30px' }}
+                      className="ml-1 mr-2"
+                      alt=""
+                    />
+                    <h1 className="text-lg font-bold">Consultation Request</h1>
+                  </div>
+
+                  <div className='bg-red-300 px-2 py-1 rounded-full'>
+                   <h1 className="text-lg font-bold">{pendingAppointmentsCount}</h1>
+                  </div>
+
                 </div>
               </Link>
               </li>
@@ -55,14 +91,20 @@ const Navbar: React.FC = () => {
                   }`}
                   style={{ borderRadius: '7px' }}
                 >
-                  <div className="flex content-between items-center p-3">
-                    <img
-                      src={checklist}
-                      style={{ width: '30px', height: '30px' }}
-                      className="ml-1 mr-2"
-                      alt=""
-                    />
-                    <h1 className="text-lg font-bold">Consultation Queue</h1>
+                  <div className="flex justify-between items-center p-3">
+                    <div className='flex content-between'>
+                      <img
+                        src={checklist}
+                        style={{ width: '30px', height: '30px' }}
+                        className="ml-1 mr-2"
+                        alt=""
+                      />
+                      <h1 className="text-lg font-bold">Consultation Queue</h1>
+                    </div>
+
+                    <div className='bg-red-300 px-2 py-1 rounded-full'>
+                   <h1 className="text-lg font-bold">{confirmedAppoinmentsCount}</h1>
+                  </div>
                   </div>
                 </Link>
               </li>

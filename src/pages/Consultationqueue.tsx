@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import LogoSmall from '../assets/images/logosmall.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faUser } from '@fortawesome/free-solid-svg-icons';
+import {  faUser } from '@fortawesome/free-solid-svg-icons';
 import Navbar from './components/navbar';
 import Header from './components/header';
 import { useQuery } from '@tanstack/react-query';
@@ -22,6 +21,9 @@ function ConsultationQueue() {
   const [isStatusExpanded, setIsStatusExpanded] = useState<boolean>(false);
   const [status, setStatus] = useState('');
   const [showDoneModal, setShowDoneModal] = useState(false);
+  const [expandedReasonId, setExpandedReasonId] = useState<number | null>(null);
+
+
 
   const token = sessionStorage.getItem('authToken');
 
@@ -32,7 +34,7 @@ function ConsultationQueue() {
     enabled: !!token,
   });
 
-console.log(data)
+console.log("data", data)
 
   const toggleExpansion = () => {
     setIsExpanded((prevState) => !prevState);
@@ -42,18 +44,42 @@ console.log(data)
     setIsStatusExpanded((prevState) => !prevState);
   };
 
-  const filteredRequests = data?.filter((request: any) => 
-    request.status === 'Confirmed'
-  ) || [];
-
-  console.log(filteredRequests)
 
   const toggleStatus = (newStatus: React.SetStateAction<string>) => {
     setStatus(newStatus);
     setIsStatusExpanded(false);
   };
 
+  const [filterType, setFilterType] = useState(''); 
+  const toggleDoneModal = () => setShowDoneModal((prev) => !prev);
+ // Filter the requests by status and type
+ const filteredRequests = data?.filter((request: any) => 
+  request.status === 'Confirmed' && 
+  (filterType ? request.appointment_type === filterType : true)
+) || [];
 
+// Group appointments by date
+const groupedAppointments = filteredRequests.reduce((acc: any, request: any) => {
+  const date = new Date(request.appointment_timestamp);
+  const dateString = date.toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  if (!acc[dateString]) acc[dateString] = [];
+  acc[dateString].push(request);
+  return acc;
+}, {});
+
+// Sort the grouped appointments by date
+const sortedGroupedAppointments = Object.keys(groupedAppointments)
+  .sort((a, b) => new Date(a) - new Date(b)) // Sort by date
+  .reduce((acc: any, key: string) => {
+    acc[key] = groupedAppointments[key];
+    return acc;
+  }, {});
+
+
+  
   const handleDone = async (appointment_id: number) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -95,87 +121,12 @@ console.log(data)
       <div className="mx-2 sm:mx-4 md:mx-10 details mt-4 mb-2 ">
         <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-4">
           <div className="col-span-1 md:col-span-4 lg:col-span-3 detail-status" style={{position: 'relative'}}>
-                  {/* <div
-
-                    style={{
-                      position: 'absolute',
-                      width: '100%',
-                      background: '#D9D9D9',
-                      border: '1px solid black',
-                      borderRadius: '7px',
-                    }}
-                  >
-                    <div
-                      className="flex items-center p-3 cursor-pointer"
-                      onClick={toggleExpansionStatus}
-                      style={{
-                        background: status === 'Available' ? '#80E38A' : status === 'Unavailable' ? '#D96C6C' : '', // Conditional background color
-                      }
-                      }
-
-                    >
-                      {status === 'Available' || status === 'Unavailable' ? (
-                        <h1 className="pr-10 font-bold tracking-wider" >{status}</h1>
-                      ) : (
-                        <h1 className="pr-10 font-bold ">Status</h1>  // This is the else condition
-                      )}
-                      <span style={{ position: 'absolute', right: '20px' }}>
-                        <FontAwesomeIcon
-                          icon={faChevronDown}
-                          className={`transform transition-transform ${isStatusExpanded ? 'rotate-180' : ''}`}
-                        />
-                      </span>
-                      
-                  </div>
-
-
-
-                    {isStatusExpanded && (
-                      <div  >
-                        <div
-                          className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                          style={{ width: '100%' }}
-                          onClick={() => toggleStatus('Available')} // Toggle to Available
-                        >
-                          <h1 className="text-md ml-3 font-normal">Available</h1>
-                          <div
-                            className="mr-5"
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              background:  '#15B31B',
-                              borderRadius: '30px',
-                              padding: '10px',
-                            }}
-                          ></div>
-                        </div>
-
-                        <div
-                          className="flex justify-between items-center py-4 pt-1 pb-3 rounded-b"
-                          style={{ width: '100%' }}
-                          onClick={() => toggleStatus('Unavailable')} // Toggle to Unavailable
-                        >
-                          <h1 className="text-md ml-3 font-normal">Unavailable</h1>
-                          <div
-                            className="mr-5"
-                            style={{
-                              width: '10px',
-                              height: '10px',
-                              background:'#CD1616' ,
-                              borderRadius: '30px',
-                              padding: '10px',
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
-
-                  </div> */}
+               
                   <Navbar />
 
           </div>
 
-          <div className="col-span-1 md:col-span-8 lg:col-span-9  p-2 sm:p-4 md:p-6 lg:p-10 "
+          <div className="col-span-1 md:col-span-8 lg:col-span-9  p-2 sm:p-4 md:p-6 lg:px-10 "
       style={{
         maxWidth: '100%',
         width: '100vw',
@@ -185,89 +136,132 @@ console.log(data)
         borderRadius: '7px',
       }}
     >
-      <div
-        className=" p-2 sm:p-6 md:p-10"
-        style={{
-          width: '100%',
-          height: '70vh',
-          maxHeight: '100%',
-          background: '#D9D9D9',
-          borderRadius: '7px',
-          overflowY: 'scroll',
-        }}
-      >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 ">
 
-        {filteredRequests && filteredRequests.length > 0 ? (
-          filteredRequests.map((request) => (
-            <div key={request.appointment_id} className="h-auto p-3 bg-[#d1c8c3] rounded-lg">
-              <h1 className="text-2xl font-bold text-center">Student</h1>
+      {/* filter */}
+      <div className="mb-4 float-right">
+        <select
+          value={filterType}
+          onChange={(e) => setFilterType(e.target.value)}
+          className="w-full px-4 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="">All</option>
+          <option value="online">Online</option>
+          <option value="onsite">Onsite</option>
+        </select>
+      </div>
 
-              <div className="flex justify-center items-center gap-1 m-2">
-                <div className="text-center  mx-1 w-28">
-                  <div className='p-3 m-auto border-2 border-black rounded-full'>
-                    <FontAwesomeIcon icon={faUser} className='text-2xl' aria-label="User Icon" />
-                  </div>
-                  <p className="text-sm font-bold">{request.firstname} {request.lastname}</p>
-                </div>
+              <div
+                className=" p-2 sm:p-6 md:p-3"
+                style={{
+                  width: '100%',
+                  height: '70vh',
+                  maxHeight: '100%',
+                  background: '#D9D9D9',
+                  borderRadius: '7px',
+                  overflowY: 'scroll',
+                }}
+              >
+                <div>
+                {Object.keys(sortedGroupedAppointments).length === 0 ? (
+  <p className="text-center text-gray-500">No Requests Available</p>
+) : (
+  Object.keys(sortedGroupedAppointments).map((date, index) => (
+    <div key={index}>
+      <h2 className="text-lg font-bold mb-2">{date}</h2>
+      {sortedGroupedAppointments[date].map((request) => (
+        <div key={request.appointment_id} className="h-auto p-1 bg-[#d1c8c3] rounded-lg mb-2">
+          <div className="flex justify-around items-center gap-12 m-2">
+            <div className="flex justify-around items-center gap-6">
+              <div className="p-3 m-auto border-2 border-black rounded-full">
+                <FontAwesomeIcon icon={faUser} className="text-2xl" aria-label="User Icon" />
+              </div>
+              <p className="text-sm font-bold">{request.firstname} {request.lastname}</p>
+            </div>
+            <div className="bg-white p-2 rounded-lg text-center">
+              <h1 className="font-bold text-1xl tracking-wider text-green-700">
+                {new Date(request.appointment_timestamp).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                }).replace(/\s/, '')} {/* Removes the space between the time and AM/PM */}
+              </h1>
+            </div>
 
-                <div className="bg-white px-5 py-8 rounded-lg text-center">
-                  <h1 className="font-bold text-1xl tracking-wider text-green-700">
-                    CONSULTATION ONGOING
+            
+            <div className="text-center mt-2 flex-grow max-w-xs">
+                  <h1 className="text-sm font-medium" style={{maxWidth: 300}}>
+                    {request.reason.length > 10 ? (
+                      <>
+                        {expandedReasonId === request.appointment_id
+                          ? request.reason
+                          : request.reason.substring(0, 40) + '...'}
+                        <button
+                          onClick={() => {
+                            setExpandedReasonId(expandedReasonId === request.appointment_id ? null : request.appointment_id);
+                          }}
+                          className="text-blue-500 ml-2"
+                        >
+                          {expandedReasonId === request.appointment_id ? 'See Less' : 'See More'}
+                        </button>
+                      </>
+                    ) : (
+                      request.reason
+                    )}
                   </h1>
                 </div>
-              </div>
 
-              <div className="flex justify-end mr-2">
-                <button
-                  className="px-3 py-1 rounded-md bg-green-700 text-white"
-                  aria-label="Mark as done"
-                  onClick={openDoneModal  } // Pass appointment_id
-                >
-                  Done
-                </button>
-              </div>
-              {showDoneModal && (
-                          <div
-                            className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
-                            style={{ backdropFilter: 'blur(1px)' }}
+
+                    <div className="flex justify-end mr-2">
+                      <button
+                        className="px-3 py-1 rounded-md bg-green-700 text-white"
+                        aria-label="Mark as done"
+                        onClick={toggleDoneModal} // Open modal
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+
+                  {showDoneModal && (
+                    <div
+                      className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50"
+                      style={{ backdropFilter: 'blur(1px)' }}
+                    >
+                      <div
+                        className="bg-white p-6 rounded-lg max-w-sm w-full"
+                        style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                      >
+                        <h2 className="text-center text-lg font-semibold mb-4">Are you sure you want to complete this request?</h2>
+                        <div className="flex justify-center space-x-4">
+                          <button
+                            onClick={() => handleDone(request.appointment_id)} // Pass appointment_id
+                            className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
                           >
-                            <div
-                              className="bg-white p-6 rounded-lg max-w-sm w-full"
-                              style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
-                            >
-                              <h2 className="text-center text-lg font-semibold mb-4">Are you sure you want to complete this request?</h2>
-                              <div className="flex justify-center space-x-4">
-                                <button
-                                  onClick={() => handleDone(request.appointment_id)} // Pass appointment_id
-                                  className="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-700"
-                                >
-                                  Confirm
-                                </button>
-                                <button
-                                  onClick={closeDoneModal}
-                                  className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-500"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                            Confirm
+                          </button>
+                          <button
+                            onClick={toggleDoneModal}
+                            className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-500"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           ))
-        ) : (
-          <p className=" text-center text-gray-500 ">No Requests Available</p>
-          
         )}
 
+                </div>
+              </div>
         </div>
-      </div>
-          </div>
 
 
-            </div>
       </div>
+    </div>
 
 
 
@@ -276,3 +270,6 @@ console.log(data)
 }
 
 export default ConsultationQueue;
+
+
+
