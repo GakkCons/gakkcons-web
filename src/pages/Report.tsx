@@ -13,7 +13,9 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "./plugins/axios";
 import "./style.css";
 import Header from "./components/header";
-import printer from "../assets/images/printer.png";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import ustp from '../assets/images/ustplogo.png'
 
 // Fetch data function
 const fetchAnalyticsData = async (token: string) => {
@@ -55,10 +57,46 @@ function Report() {
   const token = sessionStorage.getItem("authToken");
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(""); // State to track selected status
-  const [filter, setFilter] = useState(""); // State to store the filter criteria
+  const [selectedStatus, setSelectedStatus] = useState(""); 
+  const [filter, setFilter] = useState(""); 
 
-  // Fetch data using react-query
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [chosenStatus, setChosenStatus] = useState(""); // Renamed variable
+
+
+  const handleStatusSelection = (status: string) => {
+    setChosenStatus(status); // Update chosenStatus
+    setIsModalOpen(false); // Close the modal after selection
+    handleDownloadReport(status); // Pass the chosen status to the report function
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close the modal
+  };
+
+
+  const [isTeacherModal, setIsTeacherModal] = useState(false);
+  const [chosenTeacher, setChosenTeacher] = useState("");
+
+  const handleStatusSelection2 = (status: string) => {
+    setChosenTeacher(status); // Update chosenStatus
+    setIsTeacherModal(false); // Close the modal after selection
+    handleDownloadTeacherReport(status); // Pass the chosen status to the report function
+  };
+
+  
+  const handleTeacherOpenModal = () => {
+    setIsTeacherModal(true); // Open the modal
+  };
+
+  const handleTeacherCloseModal = () => {
+    setIsTeacherModal(false); // Close the modal
+  };
+
   const { data, error, isLoading, refetch } = useQuery({
     queryKey: ["analytics"],
     queryFn: () => fetchAnalyticsData(token),
@@ -116,66 +154,106 @@ function Report() {
   if (error || teachersError)
     return <div>Error: {error?.message || teachersError?.message}</div>;
 
-  const handleDownloadReport = () => {
-    // Ensure data.appointments is an array before using .map
-    const appointments = data?.appointments || []; // Use empty array if undefined
 
-    // Add 'Status' to the headers
-    const headers = [
-      "Student",
-      "Teacher",
-      "Date",
-      "Time",
-      "Request Mode",
-      "Status",
-    ];
-
-    const rows = appointments.map((appointment) => [
+  const handleDownloadReport = (status: string) => {
+    const appointments = data?.appointments || [];
+  
+    const filteredAppointments = appointments.filter((appointment) => {
+      return appointment.appointment_status === status || status === "All";
+    });
+  
+    const rows = filteredAppointments.map((appointment) => [
       `${appointment.student_firstname} ${appointment.student_lastname}`,
       `${appointment.instructor_first_name} ${appointment.instructor_last_name}`,
       appointment.appointment_date,
       formatTime(appointment.appointment_time),
       appointment.consultation_mode,
-      appointment.appointment_status, // Add status here
     ]);
+  
+    const headers = [
+      ["Student", "Teacher", "Date", "Time", "Request Mode"],
+    ];
+  
+    const doc = new jsPDF();
+  
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
+  
+    const img = new Image();
+    img.src = ustp;
+    img.onload = () => {
+      const aspectRatio = img.width / img.height;
+      const imgWidth = pageWidth; 
+      const imgHeight = imgWidth / aspectRatio; 
+  
+      if (imgHeight > pageHeight) {
+        const scaleFactor = pageHeight / imgHeight;
+        imgHeight = pageHeight;
+        imgWidth *= scaleFactor;
+      }
+  
+      doc.addImage(ustp, "PNG", 0, 10, imgWidth, imgHeight); 
+  
+      doc.setFontSize(18);
+      doc.text("Consultation Appointment Report", pageWidth / 2, 10 + imgHeight + 10, { align: 'center' });
+  
+      const currentDate = new Date().toLocaleDateString();
+      doc.setFontSize(12);
+      doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 10 + imgHeight + 20, { align: 'center' });
 
-    // Convert to CSV format
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.join(",")),
-    ].join("\n");
+        
+      // Add a subtitle (optional)
+      doc.setFontSize(12);
+      doc.text(`Status: ${status}`, pageWidth / 2, 10 + imgHeight + 30, { align: "center" });
 
-    // Create Blob and download link for the CSV file
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-      const filename = `consultation_report_${new Date().toISOString()}.csv`;
-      link.setAttribute("href", URL.createObjectURL(blob));
-      link.setAttribute("download", filename);
-      link.click();
-    }
+
+      doc.autoTable({
+        head: headers,
+        body: rows,
+        startY: 10 + imgHeight + 35, 
+        styles: {
+          halign: "center",
+        },
+        headStyles: {
+          fillColor: [41, 128, 185], 
+          textColor: [255, 255, 255], 
+          fontSize: 12,
+        },
+        bodyStyles: {
+          fontSize: 10,
+        },
+        alternateRowStyles: {
+          fillColor: [240, 240, 240],
+        },
+      });
+  
+      // Save the PDF
+      const filename = `consultation_report_${new Date().toISOString().split("T")[0]}.pdf`;
+      doc.save(filename);
+    };
   };
+  
 
-  const handleDownloadTeacherReport = () => {
-    if (filteredAppointments1.length > 0) {
-      // Create CSV data with added 'STATUS' column
+  const handleDownloadTeacherReport = (status: string) => {
+    const filteredAppointments = filteredAppointments1.filter((appointment) => {
+      return status === "All" || appointment.status === status;
+    });
+  
+    if (filteredAppointments.length > 0) {
       const headers = [
         "TEACHER",
         "STUDENT",
         "DATE",
         "TIME",
         "REQUEST MODE",
-        "STATUS",
       ];
-
-      // Assuming filteredTeachers contains teacher info
-      const teacherName =
-        filteredTeachers.length > 0
-          ? filteredTeachers[0].name
-          : "Unknown Teacher";
-
-      const rows = filteredAppointments1.map((request) => [
-        teacherName, // Include teacher's name
+  
+      const teacherName = filteredTeachers.length > 0
+        ? filteredTeachers[0].name
+        : "Unknown Teacher";
+  
+      const rows = filteredAppointments.map((request) => [
+        teacherName,
         `${request.student.first_name} ${request.student.last_name}`,
         new Date(request.scheduled_date).toISOString().split("T")[0],
         new Date(request.scheduled_date).toLocaleTimeString("en-US", {
@@ -185,24 +263,72 @@ function Report() {
           timeZone: "Asia/Manila",
         }),
         request.mode,
-        request.status, // Add status
       ]);
+  
+      // Create a new jsPDF instance
+      const doc = new jsPDF();
+  
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;  
+  
+      const img = new Image();
+      img.src = ustp; // assuming 'ustp' is the image source URL or data URI
+  
+      img.onload = () => {
+        const aspectRatio = img.width / img.height;
+        let imgWidth = pageWidth; 
+        let imgHeight = imgWidth / aspectRatio;
+  
+        if (imgHeight > pageHeight) {
+          const scaleFactor = pageHeight / imgHeight;
+          imgHeight = pageHeight;
+          imgWidth *= scaleFactor;
+        }
+  
+        doc.addImage(img, "PNG", 0, 10, imgWidth, imgHeight); // Add the image
+  
+        // Add a title to the PDF
+        doc.setFontSize(18);
+        doc.text("Teacher Consultation Report", pageWidth / 2, 10 + imgHeight + 10, { align: "center" });
 
-      // Combine headers and rows
-      const csvContent = [headers, ...rows]
-        .map((row) => row.join(","))
-        .join("\n");
+        const currentDate = new Date().toLocaleDateString();
+        doc.setFontSize(12);
+        doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 10 + imgHeight + 20, { align: 'center' });
 
-      // Create a Blob for the CSV data and generate a download link
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "teacher_report.csv"; // Name of the file
+          
+        // Add a subtitle (optional)
+        doc.setFontSize(12);
+        doc.text(`Status: ${status}`, pageWidth / 2, 10 + imgHeight + 30, { align: "center" });
+  
 
-      // Trigger the download
-      link.click();
+        // Add the table using jsPDF AutoTable
+        doc.autoTable({
+          head: [headers],
+          body: rows,
+          startY: 10 + imgHeight + 35, // Start the table below the title and image
+          styles: {
+            fontSize: 10,
+            halign: "center", // Center align text
+          },
+          headStyles: {
+            fillColor: [41, 128, 185], // Blue header
+            textColor: [255, 255, 255], // White text
+            fontSize: 12,
+          },
+          bodyStyles: {
+            fontSize: 10,
+          },
+          alternateRowStyles: {
+            fillColor: [240, 240, 240],
+          },
+        });
+  
+        // Save the generated PDF
+        doc.save("teacher_report.pdf");
+      };
     }
   };
+  
 
   const handleFilterChange = (status) => {
     setFilter(status); // Set the filter when a user clicks on a specific category
@@ -403,13 +529,79 @@ function Report() {
                     </h1>
                     <button
                       className="text-lg text-dark"
-                      onClick={handleDownloadTeacherReport}
+                      onClick={handleTeacherOpenModal}
                     >
                       Download Report
                       <span className="mr-2"></span>
                       <FontAwesomeIcon icon={faPrint} />
                     </button>
                   </div>
+                  {isTeacherModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                      <div className="bg-white rounded-lg p-8 w-full sm:w-96 md:w-1/2 shadow-xl">
+                        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Choose a Status</h2>
+
+                        <div className="space-y-4">
+                            <button
+                              className="w-full py-3 px-6 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                              onClick={() => handleStatusSelection2("All")}
+                            >
+                              All
+                            </button>
+
+                          {/* Approved Button */}
+                          {filteredAppointments1.filter((item) => item.status === "Confirmed").length > 0 && (
+                            <button
+                              className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+                              onClick={() => handleStatusSelection2("Confirmed")}
+                            >
+                              Approved
+                            </button>
+                          )}
+
+                          {/* Rejected Button */}
+                          {filteredAppointments1.filter((item) => item.status === "Denied").length > 0 && (
+                            <button
+                              className="w-full py-3 px-6 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                              onClick={() => handleStatusSelection2("Denied")}
+                            >
+                              Rejected
+                            </button>
+                          )}
+
+                          {/* Pending Button */}
+                          {filteredAppointments1.filter((item) => item.status === "Pending").length > 0 && (
+                            <button
+                              className="w-full py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              onClick={() => handleStatusSelection2("Pending")}
+                            >
+                              Pending
+                            </button>
+                          )}
+
+                          {/* Completed Button */}
+                          {filteredAppointments1.filter((item) => item.status === "Completed").length > 0 && (
+                            <button
+                              className="w-full py-3 px-6 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                              onClick={() => handleStatusSelection2("Completed")}
+                            >
+                              Completed
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="flex justify-end">
+                          <button
+                            className="mt-6 w-40 py-3 px-6 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            onClick={() => setIsTeacherModal(false)} // Close the modal
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
 
                   <div
                     className="w-full min-h-[600px] rounded-md pt-5"
@@ -552,13 +744,79 @@ function Report() {
                       </h1>
                       <button
                         className="text-lg text-white"
-                        onClick={handleDownloadReport} // Trigger the download when clicked
+                        onClick={handleOpenModal} // Trigger the download when clicked
                       >
                         Download Report
                         <span className="mr-2"></span>
                         <FontAwesomeIcon icon={faPrint} />
                       </button>
                     </div>
+                    {isModalOpen && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="bg-white rounded-lg p-8 w-full sm:w-96 md:w-1/2 shadow-xl">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-900">Choose a Status</h2>
+
+      <div className="space-y-4">
+          <button
+            className="w-full py-3 px-6 bg-white-500 text-black border-2 border-black rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            onClick={() => handleStatusSelection("All")}
+          >
+            All
+          </button>
+        
+
+        {/* Approved Button */}
+        {filteredAppointments1.filter((item) => item.status === "Confirmed").length > 0 && (
+          <button
+            className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+            onClick={() => handleStatusSelection("Confirmed")}
+          >
+            Approved
+          </button>
+        )}
+
+        {/* Rejected Button */}
+        {filteredAppointments1.filter((item) => item.status === "Denied").length > 0 && (
+          <button
+            className="w-full py-3 px-6 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+            onClick={() => handleStatusSelection("Denied")}
+          >
+            Rejected
+          </button>
+        )}
+
+        {/* Pending Button */}
+        {filteredAppointments1.filter((item) => item.status === "Pending").length > 0 && (
+          <button
+            className="w-full py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onClick={() => handleStatusSelection("Pending")}
+          >
+            Pending
+          </button>
+        )}
+
+        {/* Completed Button */}
+        {filteredAppointments1.filter((item) => item.status === "Completed").length > 0 && (
+          <button
+            className="w-full py-3 px-6 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            onClick={() => handleStatusSelection("Completed")}
+          >
+            Completed
+          </button>
+        )}
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          className="mt-6 w-40 py-3 px-6 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-400"
+          onClick={handleCloseModal}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
                     <div
                       className="w-full min-h-[600px] rounded-md pt-5"
