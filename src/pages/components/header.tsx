@@ -59,8 +59,9 @@ export default function Header() {
       <div className="mr-10 mt-5 logo">
         <div className="flex items-center">
           <img src={LogoSmall} alt="logo" className="w-30 h-1/12" />
-          <h1 className="m-0 p-0 text-5xl font-black font-montserrat" style={{ letterSpacing: '2px' }}>
-            GakkCons
+          <h1 className="m-0 p-0 text-lg font-black font-montserrat" style={{ letterSpacing: '2px' }}>
+          Consultation Appointment System IT department
+
           </h1>
         </div>
       </div>

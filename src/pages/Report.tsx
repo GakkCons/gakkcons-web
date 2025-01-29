@@ -176,18 +176,18 @@ function Report() {
   
     const doc = new jsPDF();
   
-    const pageWidth = doc.internal.pageSize.width;
-    const pageHeight = doc.internal.pageSize.height;
+    let pageWidth = doc.internal.pageSize.width;
+    let pageHeight = doc.internal.pageSize.height;
   
     const img = new Image();
     img.src = ustp;
     img.onload = () => {
-      const aspectRatio = img.width / img.height;
-      const imgWidth = pageWidth; 
-      const imgHeight = imgWidth / aspectRatio; 
+      let aspectRatio = img.width / img.height;
+      let imgWidth = pageWidth; 
+      let imgHeight = imgWidth / aspectRatio; 
   
       if (imgHeight > pageHeight) {
-        const scaleFactor = pageHeight / imgHeight;
+        let scaleFactor = pageHeight / imgHeight;
         imgHeight = pageHeight;
         imgWidth *= scaleFactor;
       }
@@ -252,7 +252,7 @@ function Report() {
         ? filteredTeachers[0].name
         : "Unknown Teacher";
   
-      const rows = filteredAppointments.map((request) => [
+        let rows = filteredAppointments.map((request) => [
         teacherName,
         `${request.student.first_name} ${request.student.last_name}`,
         new Date(request.scheduled_date).toISOString().split("T")[0],
@@ -266,21 +266,21 @@ function Report() {
       ]);
   
       // Create a new jsPDF instance
-      const doc = new jsPDF();
+      let doc = new jsPDF();
   
-      const pageWidth = doc.internal.pageSize.width;
-      const pageHeight = doc.internal.pageSize.height;  
+      let pageWidth = doc.internal.pageSize.width;
+      let pageHeight = doc.internal.pageSize.height;  
   
-      const img = new Image();
+      let img = new Image();
       img.src = ustp; // assuming 'ustp' is the image source URL or data URI
   
       img.onload = () => {
-        const aspectRatio = img.width / img.height;
+        let aspectRatio = img.width / img.height;
         let imgWidth = pageWidth; 
         let imgHeight = imgWidth / aspectRatio;
   
         if (imgHeight > pageHeight) {
-          const scaleFactor = pageHeight / imgHeight;
+          let scaleFactor = pageHeight / imgHeight;
           imgHeight = pageHeight;
           imgWidth *= scaleFactor;
         }
