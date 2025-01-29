@@ -78,43 +78,6 @@ function Home() {
   };
 
 
-  // const handleAccept = async () => {
-  //   const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
-  
-  //   const updatedAppointmentData = {
-  //     ...appointmentData,
-  //     scheduled_date: formattedDate, 
-  //   };
-  
-  //   console.log(updatedAppointmentData)
-  //   const headers = {
-  //     'Content-Type': 'application/json',
-  //     'Authorization': `${token}`,
-  //   };
-  
-  //   try {
-  //     const response = await axios.put(`/appointments/update/${selectedRequest.appointment_id}`, updatedAppointmentData, {
-  //       headers: headers,
-  //     });
-  
-  //     console.log('Appointment updated successfully:', response.data);
-  //     setShowAcceptModal(false);
-  //     setViewDetails(false);
-  //     refetch();
-  //     setIsOnline(false);
-  //     setAppointmentData({
-  //       status: "Confirmed",
-  //       meet_link: "",
-  //       mode: "onsite",  
-  //       dateTime: new Date() 
-  //     })
-  //     setSelectedRequest('')
-  
-  //   } catch (error) {
-  //     console.error('Error updating appointment:', error.message);
-  //     console.log(appointmentData);
-  //   }
-  // };
 
   // const handleAccept = async () => {
   //   const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
@@ -124,7 +87,6 @@ function Home() {
   //     scheduled_date: formattedDate,
   //   };
   
-  //   console.log(updatedAppointmentData);
   //   const headers = {
   //     'Content-Type': 'application/json',
   //     Authorization: `${token}`,
@@ -139,42 +101,41 @@ function Home() {
   
   //     console.log('Appointment updated successfully:', response.data);
   
-  //     // Check if there's a warning in the response
+  //     // Check for warning
   //     if (response.data.warning) {
-  //       const userConfirmed = window.confirm(
-  //         `Warning: ${response.data.warning}\nWould you like to proceed?`
-  //       );
-  //       if (!userConfirmed) {
-  //         // User chose not to proceed
-  //         return;
-  //       }
+  //       setWarningMessage(response.data.warning);
+  //       setShowWarningModal(true);
+  //       return; // Stop further actions until the user responds to the warning modal
   //     }
   
-  //     // Proceed with the post-update logic
-  //     setShowAcceptModal(false);
-  //     setViewDetails(false);
-  //     refetch();
-  //     setIsOnline(false);
-  //     setAppointmentData({
-  //       status: 'Confirmed',
-  //       meet_link: '',
-  //       mode: 'onsite',
-  //       dateTime: new Date(),
-  //     });
-  //     setSelectedRequest('');
+  //     proceedWithUpdate();
   //   } catch (error) {
   //     console.error('Error updating appointment:', error.message);
-  //     console.log(appointmentData);
   //   }
   // };
   
+  // const proceedWithUpdate = () => {
+  //   setShowAcceptModal(false);
+  //   setViewDetails(false);
+  //   refetch();
+  //   setIsOnline(false);
+  //   setAppointmentData({
+  //     status: 'Confirmed',
+  //     meet_link: '',
+  //     mode: 'onsite',
+  //     dateTime: new Date(),
+  //   });
+  //   setSelectedRequest('');
+  // };
+  
 
-  const handleAccept = async () => {
+  const handleAccept = async (isProceed = false) => {
     const formattedDate = format(appointmentData.dateTime, 'yyyy-MM-dd HH:mm:ss');
   
     const updatedAppointmentData = {
       ...appointmentData,
       scheduled_date: formattedDate,
+      isProceed, // Pass the proceed flag to indicate whether the user confirmed to proceed
     };
   
     const headers = {
@@ -191,13 +152,14 @@ function Home() {
   
       console.log('Appointment updated successfully:', response.data);
   
-      // Check for warning
-      if (response.data.warning) {
+      // If the server returns a warning and the user has not confirmed to proceed yet
+      if (response.data.warning && !isProceed) {
         setWarningMessage(response.data.warning);
         setShowWarningModal(true);
         return; // Stop further actions until the user responds to the warning modal
       }
   
+      // Proceed with the update if no warning or user confirmed to proceed
       proceedWithUpdate();
     } catch (error) {
       console.error('Error updating appointment:', error.message);
@@ -218,7 +180,6 @@ function Home() {
     setSelectedRequest('');
   };
   
-
 
   const [zoomError, setZoomError] = useState('Enter a valid zoom link');
 
@@ -261,6 +222,8 @@ function Home() {
       console.error('Error updating appointment:', error.message);
     }
   };
+
+
     const openRejectModal = () => {
       setShowRejectModal(true);
     };
@@ -517,9 +480,9 @@ function Home() {
                             <div className="flex justify-center mt-2">
 
                               
-                          <button
+                                    <button
                             className="px-4 py-2 bg-green-500 text-white rounded disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            onClick={handleAccept}
+                            onClick={() => handleAccept(false)} // Corrected
                             disabled={
                               !appointmentData.dateTime || // Disable if no date/time is selected
                               (isOnline && zoomError) // Disable if online and there's a Zoom link error
@@ -543,7 +506,7 @@ function Home() {
         <button
           onClick={() => {
             setShowWarningModal(false); // Close the modal
-            proceedWithUpdate(); // Proceed with the update
+            handleAccept(true); // Proceed with the update
           }}
           className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
