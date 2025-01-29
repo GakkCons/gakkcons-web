@@ -766,7 +766,7 @@ function Report() {
         
 
         {/* Approved Button */}
-        {filteredAppointments1.filter((item) => item.status === "Confirmed").length > 0 && (
+        {filteredAppointments.filter((item) => item.appointment_status === "Confirmed").length > 0 && (
           <button
             className="w-full py-3 px-6 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
             onClick={() => handleStatusSelection("Confirmed")}
@@ -776,7 +776,7 @@ function Report() {
         )}
 
         {/* Rejected Button */}
-        {filteredAppointments1.filter((item) => item.status === "Denied").length > 0 && (
+        {filteredAppointments.filter((item) => item.appointment_status === "Denied").length > 0 && (
           <button
             className="w-full py-3 px-6 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
             onClick={() => handleStatusSelection("Denied")}
@@ -786,7 +786,7 @@ function Report() {
         )}
 
         {/* Pending Button */}
-        {filteredAppointments1.filter((item) => item.status === "Pending").length > 0 && (
+        {filteredAppointments.filter((item) => item.appointment_status === "Pending").length > 0 && (
           <button
             className="w-full py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
             onClick={() => handleStatusSelection("Pending")}
@@ -796,7 +796,7 @@ function Report() {
         )}
 
         {/* Completed Button */}
-        {filteredAppointments1.filter((item) => item.status === "Completed").length > 0 && (
+        {filteredAppointments.filter((item) => item.appointment_status === "Completed").length > 0 && (
           <button
             className="w-full py-3 px-6 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             onClick={() => handleStatusSelection("Completed")}
