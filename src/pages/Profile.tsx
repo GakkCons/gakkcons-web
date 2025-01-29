@@ -44,7 +44,6 @@ function Profile() {
     firstName: "",
     lastName: "",
     email: "",
-    id_number: "",
     currentPassword: "",
     newPassword: "",
   });
@@ -86,7 +85,9 @@ function Profile() {
       // Set default id_number if it's null or empty
       setprofiledata((prevData) => ({
         ...prevData,
-        id_number: profile.id_number || "20xxxxxx",
+        firstName: profile.first_name,
+        lastName: profile.last_name,
+        email: profile.email,
       }));
     }
   }, [profile]);
@@ -159,10 +160,6 @@ function Profile() {
       .then((response) => {
         console.log("Profile updated successfully:", response.data);
         setprofiledata({
-          firstName: "",
-          lastName: "",
-          email: "",
-          id_number: "",
           currentPassword: "",
           newPassword: "",
         });
@@ -172,7 +169,6 @@ function Profile() {
       })
       .catch((error) => {
         console.error("Error updating profile:", error);
-        alert("Enter your new password");
       });
   };
 
@@ -264,54 +260,6 @@ function Profile() {
               </div>
             </div>
 
-            {/* <div className="flex justify-center  md:pt-5  lg:pt-20 xl:pt-20 ">
-                <div>
-                    
-                  <div className="w-48 h-48 bg-[#282726] rounded-full relative flex justify-center items-center">
-                      <img src="" alt="" className="w-full h-full rounded-full object-cover" />
-
-                      {isEdit ? (
-                        <button 
-                        className="absolute px-3 py-2 text-white rounded-md shadow-lg font-bold tracking-wide"
-                        style={{bottom: '0px', background: 'rgba(155, 160, 161, 1)'}} 
-                        onClick={() => {
-                          setIsEdit(false)
-                        }}
-                      >
-                          BACK
-                      </button>
-                      ) : (
-
-                        <button 
-                        className="absolute px-3 py-2 text-white rounded-md shadow-lg font-bold tracking-wide"
-                        style={{bottom: '0px', background: 'rgba(155, 160, 161, 1)'}} 
-                        onClick={() => {
-                          setIsEdit(true)
-                        }}
-                      >
-                        EDIT
-                      </button>
-                      )}
-
-
-
-                    </div>
-
-
-                    <div className='mt-5 text-center'>
-                      <div className="mt-5 text-center">
-                      <h1 className="text-2xl font-extrabold tracking-wide mb-1">{profile.first_name} {profile.last_name}</h1>
-                
-                      </div>
-
-                      <p className='text-sm font-lightbold'>
-                       
-                          {profile?.email || '20xxxxxx'}
-                      </p>
-                      </div>
-                  </div>
-              </div> */}
-
             <div className="flex justify-center mx-2 lg:mx-10 w-full h-96 items-center ">
               <div>
                 <div className="w-48 h-48 bg-[#282726] rounded-full relative flex justify-center items-center">
@@ -378,7 +326,6 @@ function Profile() {
                       </label>
                       <input
                         type="text"
-                        placeholder={profile.first_name}
                         className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
                         value={profiledata.firstName}
                         onChange={(e) => {
@@ -393,9 +340,8 @@ function Profile() {
                     <div className="mb-2">
                       <input
                         type="text"
-                        placeholder={profile.last_name}
                         className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                        value={profiledata.last_name}
+                        value={profiledata.lastName}
                         onChange={(e) => {
                           setprofiledata({
                             ...profiledata,
@@ -414,7 +360,6 @@ function Profile() {
                       </label>
                       <input
                         type="text"
-                        placeholder={profile.email}
                         className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-gray-400"
                         value={profiledata.email}
                         onChange={(e) => {
