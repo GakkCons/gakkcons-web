@@ -218,7 +218,7 @@ function Profile() {
 
                 <button
                   className={` ${
-                    activeButtons.includes("Online/Onsite")
+                    activeButtons.includes("offline")
                       ? "bg-blue-500 text-white"
                       : ""
                   }`}
@@ -228,7 +228,7 @@ function Profile() {
                     padding: "7px",
                     background: "rgba(9, 36, 46, 1)",
                   }}
-                  onClick={() => handleButtonClick("Online/Onsite")}
+                  onClick={() => handleButtonClick("offline")}
                 >
                   <img
                     src={quadsquare} // Make sure `quadsquare` is properly defined or passed in
