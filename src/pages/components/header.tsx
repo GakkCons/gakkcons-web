@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import LogoSmall from '../../assets/images/logosmall.png';
+import LogoSmall from '../../assets/images/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import '../style.css';
@@ -58,7 +58,7 @@ export default function Header() {
     <>
       <div className="mr-10 mt-5 logo">
         <div className="flex items-center">
-          <img src={LogoSmall} alt="logo" className="w-30 h-1/12" />
+          <img src={LogoSmall} alt="logo" className='w-36 object-cover' />
           <h1 className="m-0 p-0 text-lg font-black font-montserrat" style={{ letterSpacing: '2px' }}>
           Consultation Appointment System IT department
 

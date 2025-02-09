@@ -265,7 +265,7 @@ const Login: React.FC = () => {
   if (showLogoScreen) {
     return (
       <div className="flex justify-center items-center w-screen h-screen bg-[#FFFFFF]">
-        <img src={logo} className="max-w-full h-auto" alt="logo" />
+        <img src={logo} style={{width: '400px', height: '400px', objectFit: 'cover'}} alt="logo" />
       </div>
     );
   }
@@ -274,7 +274,7 @@ const Login: React.FC = () => {
     <div className="flex justify-center items-center w-screen h-screen bg-[#fff]">
       <div className="bg-[#E3E1D9] flex flex-col md:flex-row justify-center items-center w-full max-w-4xl p-6">
         <div className="p-4 flex justify-center mb-6 md:mb-0">
-          <img src={logo} className="object-cover h-100 w-100" alt="logo" />
+          <img src={logo} style={{width: '400px', height: '400px', objectFit: 'cover'}} alt="logo" />
         </div>
 
         <div className="p-6 w-full md:w-[400px] mb-6">
