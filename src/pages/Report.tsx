@@ -16,6 +16,8 @@ import Header from "./components/header";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ustp from '../assets/images/ustplogo.png'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Fetch data function
 const fetchAnalyticsData = async (token: string) => {
@@ -59,6 +61,8 @@ function Report() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(""); 
   const [filter, setFilter] = useState(""); 
+  const [overallSelectedDate, setOverallSelectedDate] = useState(null);
+  const [teacherSelectedDate, setTeacherSelectedDate] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chosenStatus, setChosenStatus] = useState(""); // Renamed variable
@@ -159,9 +163,14 @@ function Report() {
     const appointments = data?.appointments || [];
   
     const filteredAppointments = appointments.filter((appointment) => {
-      return appointment.appointment_status === status || status === "All";
+      const matchesStatus = status === "All" || appointment.appointment_status === status;
+      const matchesDate = overallSelectedDate
+        ? appointment.appointment_date === new Date(overallSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+        : true;
+    
+      return matchesStatus && matchesDate;
     });
-  
+    
     const rows = filteredAppointments.map((appointment) => [
       `${appointment.student_firstname} ${appointment.student_lastname}`,
       `${appointment.instructor_first_name} ${appointment.instructor_last_name}`,
@@ -431,11 +440,20 @@ function Report() {
     setFilter(status); // Set the filter when a user clicks on a specific category
   };
 
-  // Filter appointments based on the selected status
-  const filteredAppointments = data.appointments.filter((request) =>
-    filter ? request.appointment_status === filter : true
-  );
+  // // Filter appointments based on the selected status
+  // const filteredAppointments = data.appointments.filter((request) =>
+  //   filter ? request.appointment_status === filter : true
+  // );
 
+  const filteredAppointments = data.appointments.filter((request) => {
+    const matchesStatus = filter ? request.appointment_status === filter : true;
+    const matchesDate = overallSelectedDate
+      ? request.appointment_date === new Date(overallSelectedDate).toLocaleDateString("en-CA") // "YYYY-MM-DD" format
+      : true;
+    
+    return matchesStatus && matchesDate;
+  });
+  
   const handleStatusClick = (status) => {
     setSelectedStatus(status); // Update status filter when a user clicks on a status
   };
@@ -836,9 +854,15 @@ function Report() {
                         Consultation Appointment Log
                       </h1>
 
-                      <div className="datepicker ">
-                        
-                      </div>
+                    <div className="datepicker">
+                      <DatePicker
+                        selected={overallSelectedDate}
+                        onChange={(date) => setOverallSelectedDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Filter by date"
+                        className="border p-2 rounded"
+                      />
+                  </div>
                       
                       <button
                         className="text-lg text-white"
