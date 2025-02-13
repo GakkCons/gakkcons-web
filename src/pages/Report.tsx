@@ -341,10 +341,19 @@ function Report() {
   
 
   const handleDownloadTeacherReport = (status: string) => {
-    const filteredAppointments = filteredAppointments1.filter((appointment) => {
-      return status === "All" || appointment.status === status;
-    });
+    // const filteredAppointments = filteredAppointments1.filter((appointment) => {
+    //   return status === "All" || appointment.status === status;
+    // });
 
+    const filteredAppointments = filteredAppointments1.filter((appointment) => {
+      const matchesStatus = status === "All" || appointment.status === status;
+      const matchesDate = teacherSelectedDate
+        ? appointment.scheduled_date === new Date(teacherSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+        : true;
+    
+      return matchesStatus && matchesDate;
+    });
+    
   
     if (filteredAppointments.length > 0) {
       const headers = [
@@ -458,13 +467,17 @@ function Report() {
     setSelectedStatus(status); // Update status filter when a user clicks on a status
   };
 
-  const filteredAppointments1 =
-    filteredTeachers.length > 0
-      ? filteredTeachers[0].appointments.filter((appointment) =>
-          selectedStatus ? appointment.status === selectedStatus : true
-        )
-      : [];
-
+const filteredAppointments1 = 
+  filteredTeachers.length > 0
+    ? filteredTeachers[0].appointments.filter((appointment) => {
+        const matchesStatus = selectedStatus ? appointment.status === selectedStatus : true;
+        const matchesDate = teacherSelectedDate
+          ? appointment.scheduled_date === new Date(teacherSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+          : true;
+          
+        return matchesStatus && matchesDate;
+      })
+    : [];
   return (
     <>
       <Header />
@@ -638,6 +651,18 @@ function Report() {
                     <h1 className="text-black font-bold text-2xl p-2">
                       Consultation Appoinment Log
                     </h1>
+
+                    <div className="datepicker">
+                      <DatePicker
+                        selected={teacherSelectedDate}
+                        onChange={(date) => setTeacherSelectedDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Filter by date"
+                        className="border p-2 rounded"
+                      />
+                  </div>
+                      
+
                     <button
                       className="text-lg text-dark"
                       onClick={handleTeacherOpenModal}
