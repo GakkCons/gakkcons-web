@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import Report from "./pages/Report";
 import ManageAccount from "./pages/ManageAccount";
 import SocketContextProvider from "./pages/contexts/SocketContext";
+import Consultationrecord from "./pages/Consultationrecord";
 
 function App() {
   return (
@@ -45,6 +46,15 @@ function App() {
               </SocketContextProvider>
             }
           />
+
+          <Route
+            path="/record"
+            element={
+              <SocketContextProvider>
+                <Consultationrecord />
+              </SocketContextProvider>
+            }
+          />          
         </Route>
 
         <Route element={<ProtectedRoutes requiredRoles={["admin"]} />}>
