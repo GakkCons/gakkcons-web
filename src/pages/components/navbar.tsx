@@ -8,6 +8,8 @@ import report from '../../assets/images/barchar.png';
 import useraccount from '../../assets/images/qwe.png';
 import axios from '../plugins/axios';
 import { useQuery } from '@tanstack/react-query';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFolder, faFolderBlank, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 
 // Function to fetch appointments
 const fetchAppointments = async (token: string) => {
@@ -108,7 +110,22 @@ const Navbar: React.FC = () => {
                   </div>
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/record"
+                  className={`block shadow text-black hover:bg-blue-700 ${
+                    location.pathname === '/record' ? 'border-l-8 border-black bg-blue-100' : ''
+                  }`}
+                  style={{ borderRadius: '7px' }}
+                >
+                  <div className="flex content-between items-center p-3">
 
+                    <FontAwesomeIcon className="ml-1 mr-2" icon={faFolderBlank} style={{fontSize: '30px' }} />
+
+                    <h1 className="text-lg font-bold">Consultation Record</h1>
+                  </div>
+                </Link>
+            </li>  
               <li>
               <Link
                 to="/profile"
@@ -128,6 +145,9 @@ const Navbar: React.FC = () => {
                 </div>
               </Link>
             </li>
+
+
+          
               </>
             )}
 

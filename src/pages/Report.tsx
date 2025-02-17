@@ -16,6 +16,8 @@ import Header from "./components/header";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import ustp from '../assets/images/ustplogo.png'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Fetch data function
 const fetchAnalyticsData = async (token: string) => {
@@ -59,6 +61,8 @@ function Report() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(""); 
   const [filter, setFilter] = useState(""); 
+  const [overallSelectedDate, setOverallSelectedDate] = useState(null);
+  const [teacherSelectedDate, setTeacherSelectedDate] = useState(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [chosenStatus, setChosenStatus] = useState(""); // Renamed variable
@@ -159,9 +163,14 @@ function Report() {
     const appointments = data?.appointments || [];
   
     const filteredAppointments = appointments.filter((appointment) => {
-      return appointment.appointment_status === status || status === "All";
+      const matchesStatus = status === "All" || appointment.appointment_status === status;
+      const matchesDate = overallSelectedDate
+        ? appointment.appointment_date === new Date(overallSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+        : true;
+    
+      return matchesStatus && matchesDate;
     });
-  
+    
     const rows = filteredAppointments.map((appointment) => [
       `${appointment.student_firstname} ${appointment.student_lastname}`,
       `${appointment.instructor_first_name} ${appointment.instructor_last_name}`,
@@ -234,14 +243,121 @@ function Report() {
   };
   
 
+
+  // const handleDownloadTeacherReport = (status: string) => {
+  //   const filteredAppointments = filteredAppointments1.filter((appointment) => {
+  //     return status === "All" || appointment.status === status;
+  //   });
+  
+  //   if (filteredAppointments.length > 0) {
+  //     const headers = [
+  //       "TEACHER",
+  //       "STUDENT",
+  //       "DATE",
+  //       "TIME",
+  //       "REQUEST MODE",
+  //     ];
+  
+  //     const teacherName = filteredTeachers.length > 0
+  //       ? filteredTeachers[0].name
+  //       : "Unknown Teacher";
+  
+  //       let rows = filteredAppointments.map((request) => [
+  //       teacherName,
+  //       `${request.student.first_name} ${request.student.last_name}`,
+  //       new Date(request.scheduled_date).toISOString().split("T")[0],
+  //       new Date(request.scheduled_date).toLocaleTimeString("en-US", {
+  //         hour: "numeric",
+  //         minute: "2-digit",
+  //         hour12: true,
+  //         timeZone: "Asia/Manila",
+  //       }),
+  //       request.mode,
+  //     ]);
+  
+  //     // Create a new jsPDF instance
+  //     let doc = new jsPDF();
+  
+  //     let pageWidth = doc.internal.pageSize.width;
+  //     let pageHeight = doc.internal.pageSize.height;  
+  
+  //     let img = new Image();
+  //     img.src = ustp; // assuming 'ustp' is the image source URL or data URI
+  
+  //     img.onload = () => {
+  //       let aspectRatio = img.width / img.height;
+  //       let imgWidth = pageWidth; 
+  //       let imgHeight = imgWidth / aspectRatio;
+  
+  //       if (imgHeight > pageHeight) {
+  //         let scaleFactor = pageHeight / imgHeight;
+  //         imgHeight = pageHeight;
+  //         imgWidth *= scaleFactor;
+  //       }
+  
+  //       doc.addImage(img, "PNG", 0, 10, imgWidth, imgHeight); // Add the image
+  
+  //       // Add a title to the PDF
+  //       doc.setFontSize(18);
+  //       doc.text("Teacher Consultation Report", pageWidth / 2, 10 + imgHeight + 10, { align: "center" });
+
+  //       const currentDate = new Date().toLocaleDateString();
+  //       doc.setFontSize(12);
+  //       doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 10 + imgHeight + 20, { align: 'center' });
+
+          
+  //       // Add a subtitle (optional)
+  //       doc.setFontSize(12);
+  //       doc.text(`Status: ${status}`, pageWidth / 2, 10 + imgHeight + 30, { align: "center" });
+  
+
+  //       // Add the table using jsPDF AutoTable
+  //       doc.autoTable({
+  //         head: [headers],
+  //         body: rows,
+  //         startY: 10 + imgHeight + 35, // Start the table below the title and image
+  //         styles: {
+  //           fontSize: 10,
+  //           halign: "center", // Center align text
+  //         },
+  //         headStyles: {
+  //           fillColor: [41, 128, 185], // Blue header
+  //           textColor: [255, 255, 255], // White text
+  //           fontSize: 12,
+  //         },
+  //         bodyStyles: {
+  //           fontSize: 10,
+  //         },
+  //         alternateRowStyles: {
+  //           fillColor: [240, 240, 240],
+  //         },
+  //       });
+  
+  //       // Save the generated PDF
+  //       doc.save("teacher_report.pdf");
+  //     };
+  //   }
+  // };
+  
+
   const handleDownloadTeacherReport = (status: string) => {
+    // const filteredAppointments = filteredAppointments1.filter((appointment) => {
+    //   return status === "All" || appointment.status === status;
+    // });
+
     const filteredAppointments = filteredAppointments1.filter((appointment) => {
-      return status === "All" || appointment.status === status;
+      const matchesStatus = status === "All" || appointment.status === status;
+      const matchesDate = teacherSelectedDate
+        ? appointment.scheduled_date === new Date(teacherSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+        : true;
+    
+      return matchesStatus && matchesDate;
     });
+    
   
     if (filteredAppointments.length > 0) {
       const headers = [
-        "TEACHER",
+        "ID NUMBER",
         "STUDENT",
         "DATE",
         "TIME",
@@ -252,8 +368,8 @@ function Report() {
         ? filteredTeachers[0].name
         : "Unknown Teacher";
   
-        let rows = filteredAppointments.map((request) => [
-        teacherName,
+      let rows = filteredAppointments.map((request) => [
+        request.student.student_idnumber,
         `${request.student.first_name} ${request.student.last_name}`,
         new Date(request.scheduled_date).toISOString().split("T")[0],
         new Date(request.scheduled_date).toLocaleTimeString("en-US", {
@@ -265,18 +381,17 @@ function Report() {
         request.mode,
       ]);
   
-      // Create a new jsPDF instance
       let doc = new jsPDF();
   
       let pageWidth = doc.internal.pageSize.width;
-      let pageHeight = doc.internal.pageSize.height;  
+      let pageHeight = doc.internal.pageSize.height;
   
       let img = new Image();
       img.src = ustp; // assuming 'ustp' is the image source URL or data URI
   
       img.onload = () => {
         let aspectRatio = img.width / img.height;
-        let imgWidth = pageWidth; 
+        let imgWidth = pageWidth;
         let imgHeight = imgWidth / aspectRatio;
   
         if (imgHeight > pageHeight) {
@@ -285,34 +400,35 @@ function Report() {
           imgWidth *= scaleFactor;
         }
   
-        doc.addImage(img, "PNG", 0, 10, imgWidth, imgHeight); // Add the image
+        doc.addImage(img, "PNG", 0, 10, imgWidth, imgHeight);
   
-        // Add a title to the PDF
+        // Title
         doc.setFontSize(18);
-        doc.text("Teacher Consultation Report", pageWidth / 2, 10 + imgHeight + 10, { align: "center" });
+        doc.text("Teacher Consultation Report", pageWidth / 2, imgHeight + 20, { align: "center" });
 
+        // Date Generated
         const currentDate = new Date().toLocaleDateString();
         doc.setFontSize(12);
-        doc.text(`Generated on: ${currentDate}`, pageWidth / 2, 10 + imgHeight + 20, { align: 'center' });
-
-          
-        // Add a subtitle (optional)
-        doc.setFontSize(12);
-        doc.text(`Status: ${status}`, pageWidth / 2, 10 + imgHeight + 30, { align: "center" });
+        doc.text(`Generated on: ${currentDate}`, pageWidth / 2, imgHeight + 30, { align: "center" });
   
+        // Status
+        doc.setFontSize(12);
+        doc.text(`Status: ${status}`, pageWidth / 2, imgHeight + 40, { align: "center" });
+  
+        doc.text(`Teacher: ${teacherName}`, 15, imgHeight + 50);
 
-        // Add the table using jsPDF AutoTable
+        // Table
         doc.autoTable({
           head: [headers],
           body: rows,
-          startY: 10 + imgHeight + 35, // Start the table below the title and image
+          startY: imgHeight + 60,
           styles: {
             fontSize: 10,
-            halign: "center", // Center align text
+            halign: "center",
           },
           headStyles: {
-            fillColor: [41, 128, 185], // Blue header
-            textColor: [255, 255, 255], // White text
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255],
             fontSize: 12,
           },
           bodyStyles: {
@@ -323,7 +439,6 @@ function Report() {
           },
         });
   
-        // Save the generated PDF
         doc.save("teacher_report.pdf");
       };
     }
@@ -334,22 +449,35 @@ function Report() {
     setFilter(status); // Set the filter when a user clicks on a specific category
   };
 
-  // Filter appointments based on the selected status
-  const filteredAppointments = data.appointments.filter((request) =>
-    filter ? request.appointment_status === filter : true
-  );
+  // // Filter appointments based on the selected status
+  // const filteredAppointments = data.appointments.filter((request) =>
+  //   filter ? request.appointment_status === filter : true
+  // );
 
+  const filteredAppointments = data.appointments.filter((request) => {
+    const matchesStatus = filter ? request.appointment_status === filter : true;
+    const matchesDate = overallSelectedDate
+      ? request.appointment_date === new Date(overallSelectedDate).toLocaleDateString("en-CA") // "YYYY-MM-DD" format
+      : true;
+    
+    return matchesStatus && matchesDate;
+  });
+  
   const handleStatusClick = (status) => {
     setSelectedStatus(status); // Update status filter when a user clicks on a status
   };
 
-  const filteredAppointments1 =
-    filteredTeachers.length > 0
-      ? filteredTeachers[0].appointments.filter((appointment) =>
-          selectedStatus ? appointment.status === selectedStatus : true
-        )
-      : [];
-
+const filteredAppointments1 = 
+  filteredTeachers.length > 0
+    ? filteredTeachers[0].appointments.filter((appointment) => {
+        const matchesStatus = selectedStatus ? appointment.status === selectedStatus : true;
+        const matchesDate = teacherSelectedDate
+          ? appointment.scheduled_date === new Date(teacherSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
+          : true;
+          
+        return matchesStatus && matchesDate;
+      })
+    : [];
   return (
     <>
       <Header />
@@ -376,7 +504,7 @@ function Report() {
               borderRadius: "7px",
             }}
           >
-            <div className="pb-2 px-2 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="pb-2 flex flex-col md:flex-row justify-between items-center gap-4">
               <div className="flex justify-start items-center gap-2">
                 <h1 className="text-black text-xl sm:text-2xl tracking-wide font-semibold">
                   Consultation Report Dashboard
@@ -402,10 +530,6 @@ function Report() {
                   />
                 </div>
 
-                <FontAwesomeIcon
-                  className="text-2xl text-black cursor-pointer"
-                  icon={faFilter}
-                />
               </div>
             </div>
 
@@ -527,6 +651,18 @@ function Report() {
                     <h1 className="text-black font-bold text-2xl p-2">
                       Consultation Appoinment Log
                     </h1>
+
+                    <div className="datepicker">
+                      <DatePicker
+                        selected={teacherSelectedDate}
+                        onChange={(date) => setTeacherSelectedDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Filter by date"
+                        className="border p-2 rounded"
+                      />
+                  </div>
+                      
+
                     <button
                       className="text-lg text-dark"
                       onClick={handleTeacherOpenModal}
@@ -742,6 +878,17 @@ function Report() {
                       <h1 className="text-white font-bold text-2xl p-2">
                         Consultation Appointment Log
                       </h1>
+
+                    <div className="datepicker">
+                      <DatePicker
+                        selected={overallSelectedDate}
+                        onChange={(date) => setOverallSelectedDate(date)}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Filter by date"
+                        className="border p-2 rounded"
+                      />
+                  </div>
+                      
                       <button
                         className="text-lg text-white"
                         onClick={handleOpenModal} // Trigger the download when clicked
