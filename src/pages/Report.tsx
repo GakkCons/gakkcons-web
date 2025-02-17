@@ -369,7 +369,7 @@ function Report() {
         : "Unknown Teacher";
   
       let rows = filteredAppointments.map((request) => [
-        request.student.student_id,
+        request.student.student_idnumber,
         `${request.student.first_name} ${request.student.last_name}`,
         new Date(request.scheduled_date).toISOString().split("T")[0],
         new Date(request.scheduled_date).toLocaleTimeString("en-US", {
