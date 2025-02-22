@@ -81,15 +81,7 @@ const Login: React.FC = () => {
 
       // Check if the user is a student and restrict access
       if (response.userType === "student") {
-        setErrorMessage("Access restricted for students.");
-        setIsErrorOpen(true);
-        // Clear sessionStorage
-        sessionStorage.removeItem("authToken");
-        sessionStorage.removeItem("userType");
-
-        // Clear TanStack Query cache
-        queryClient.removeQueries(["authToken"]);
-        queryClient.removeQueries(["userType"]);
+        navigate("/faculty-status");
       } else if (response.userType === "admin") {
         navigate("/accounts");
       } else if (response.userType === "faculty") {
@@ -265,7 +257,11 @@ const Login: React.FC = () => {
   if (showLogoScreen) {
     return (
       <div className="flex justify-center items-center w-screen h-screen bg-[#FFFFFF]">
-        <img src={logo} style={{width: '400px', height: '400px', objectFit: 'cover'}} alt="logo" />
+        <img
+          src={logo}
+          style={{ width: "400px", height: "400px", objectFit: "cover" }}
+          alt="logo"
+        />
       </div>
     );
   }
@@ -274,7 +270,11 @@ const Login: React.FC = () => {
     <div className="flex justify-center items-center w-screen h-screen bg-[#fff]">
       <div className="bg-[#E3E1D9] flex flex-col md:flex-row justify-center items-center w-full max-w-4xl p-6">
         <div className="p-4 flex justify-center mb-6 md:mb-0">
-          <img src={logo} style={{width: '400px', height: '400px', objectFit: 'cover'}} alt="logo" />
+          <img
+            src={logo}
+            style={{ width: "400px", height: "400px", objectFit: "cover" }}
+            alt="logo"
+          />
         </div>
 
         <div className="p-6 w-full md:w-[400px] mb-6">
