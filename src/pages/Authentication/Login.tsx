@@ -51,12 +51,6 @@ const Login: React.FC = () => {
     queryClient.getQueryData(["authToken"]) ||
     sessionStorage.getItem("authToken");
 
-  useEffect(() => {
-    if (authToken) {
-      navigate("/home");
-    }
-  }, [authToken, navigate]);
-
   const handleModalToggle = () => {
     setIsModalOpen(!isModalOpen);
   };

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const debug = false;
+const debug = true;
 
 export let backendURL: string;
 
@@ -14,3 +14,12 @@ axios.defaults.baseURL = `${backendURL}/api/`;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 export default axios;
+
+export async function AuthHeader() {
+  const token = sessionStorage.getItem("authToken");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+}
