@@ -4,6 +4,8 @@ import Navbar from './components/navbar';
 import calendarIcon from "../assets/images/CRD.png";
 import { useQuery } from "@tanstack/react-query";
 import axios from "../pages/plugins/axios";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 // Function to fetch appointments
 const fetchAppointments = async (token: string) => {
@@ -20,6 +22,7 @@ function Consultationrecord() {
 
 
     const [selectedStatus, setSelectedStatus] = useState("");
+    const [teacherSelectedDate, setTeacherSelectedDate] = useState(null);
 
     const token = sessionStorage.getItem("authToken");
 
@@ -47,9 +50,17 @@ function Consultationrecord() {
     
 
       const filteredRequests =
-      data?.filter((request) =>
-        selectedStatus ? request.status === selectedStatus : true
-      ) || [];
+      data?.filter((request) => {
+        // Convert selected date to "YYYY-MM-DD" format using en-CA
+        const selectedDate = teacherSelectedDate
+          ? new Date(teacherSelectedDate).toLocaleDateString("en-CA")
+          : null;
+    
+        const matchesStatus = selectedStatus ? request.status === selectedStatus : true;
+        const matchesDate = selectedDate ? request.appointment_date === selectedDate : true;
+    
+        return matchesStatus && matchesDate;
+      }) || [];
   
     
   return (
@@ -91,12 +102,21 @@ function Consultationrecord() {
                   className="w-full min-h-[600px] rounded-md pt-5"
                   style={{ background: "#d9d9d9" }}
                 >
-                     <div className="overflow-x-auto">
+                     <div className="overflow-x-auto">                  
+
                         <table className="w-full text-center table-auto border border-gray-300 shadow-md rounded-lg">
                         <thead className="bg-blue-200 text-gray-700">
                             <tr>
-                            <th className="py-3 px-4 border-b text-lg font-semibold" colSpan={6}>
-                                Consultation Records
+                            <th className="px-4 py-2 border-b text-lg font-semibold" colSpan={6}>
+                                <span className='me-5 font-bold ' >Consultation Records</span>
+
+                                <DatePicker
+                                        selected={teacherSelectedDate}
+                                        onChange={(date) => setTeacherSelectedDate(date)}
+                                        dateFormat="yyyy-MM-dd"
+                                        placeholderText="Filter by date"
+                                        className="border p-2 rounded"
+                                      />
                             </th>
                             </tr>
                             <tr className="bg-blue-100">

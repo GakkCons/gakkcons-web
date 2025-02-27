@@ -466,18 +466,25 @@ function Report() {
   const handleStatusClick = (status) => {
     setSelectedStatus(status); // Update status filter when a user clicks on a status
   };
-
-const filteredAppointments1 = 
+  
+  const filteredAppointments1 =
   filteredTeachers.length > 0
     ? filteredTeachers[0].appointments.filter((appointment) => {
+        const appointmentDate = new Date(appointment.scheduled_date).toLocaleDateString("en-CA"); // "YYYY-MM-DD"
+        const selectedDate = teacherSelectedDate
+          ? new Date(teacherSelectedDate).toLocaleDateString("en-CA")
+          : null;
+
         const matchesStatus = selectedStatus ? appointment.status === selectedStatus : true;
-        const matchesDate = teacherSelectedDate
-          ? appointment.scheduled_date === new Date(teacherSelectedDate).toLocaleDateString("en-CA") // Ensures "YYYY-MM-DD" format
-          : true;
-          
+        const matchesDate = teacherSelectedDate ? appointmentDate === selectedDate : true;
+
         return matchesStatus && matchesDate;
       })
     : [];
+
+
+
+
   return (
     <>
       <Header />
