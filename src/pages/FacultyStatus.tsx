@@ -13,6 +13,8 @@ import {
 import Header from "./components/header";
 import Navbar from "./components/navbar";
 import smileImg from "../assets/images/smile.png";
+import { useSocket } from "./contexts/SocketContext";
+import { useNotification } from "../services/notification/notification.hooks";
 
 type Teacher = {
   user_id: string;
@@ -29,8 +31,6 @@ type ValidationErrors = {
 
 function FacultyStatus() {
   const [isRequestTeacherOpen, setIsRequestTeacherOpen] = useState(false);
-  const [isProceedNotPressed, setIsProceedNotPressed] = useState(true);
-  const [isTeacherBusy, setIsTeacherBusy] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
   const [selectedMode, setSelectedMode] = useState("");
   const [reason, setReason] = useState("");
@@ -38,12 +38,10 @@ function FacultyStatus() {
     useState<ValidationErrors>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const io = useSocket();
 
-  const {
-    data: teacherData,
-    isLoading: isGetTeacherLoading,
-    refetch: refetchTeacherData,
-  } = useGetTeachers(searchQuery);
+  const { data: teacherData, refetch: refetchTeacherData } =
+    useGetTeachers(searchQuery);
 
   const {
     mutate: requestMutate,
@@ -64,27 +62,11 @@ function FacultyStatus() {
     setIsRequestTeacherOpen(true);
   };
 
-  // const handleProceed = () => {
-  //   if (!selectedTeacher) return;
+  useNotification();
 
-  //   if (
-  //     selectedTeacher.appointments &&
-  //     selectedTeacher.appointments.length > 4
-  //   ) {
-  //     if (isProceedNotPressed) {
-  //       setIsRequestTeacherOpen(false);
-  //       setIsTeacherBusy(true);
-  //     } else {
-  //       validateAndSubmit();
-  //     }
-  //   } else {
-  //     if (isProceedNotPressed) {
-  //       setIsProceedNotPressed(false);
-  //     } else {
-  //       validateAndSubmit();
-  //     }
-  //   }
-  // };
+  io.on("faculty_active_status", () => {
+    refetchTeacherData();
+  });
 
   const validateAndSubmit = () => {
     const validationErrors: ValidationErrors = {};
@@ -119,7 +101,7 @@ function FacultyStatus() {
       }
 
       if (isRequestSuccess) {
-        setIsProceedNotPressed(true);
+        refetchTeacherData();
         setIsSuccess(true);
         setIsRequestTeacherOpen(false);
         setSelectedMode("");
@@ -128,14 +110,10 @@ function FacultyStatus() {
       }
 
       if (isRequestError) {
-        if (requestErrors?.message.includes("You already")) {
-          alert("Appointment Request Error: " + requestErrors.message);
-        } else {
-          toast.error(requestErrors?.message, {
-            position: "top-center",
-            duration: 4000,
-          });
-        }
+        toast.error(requestErrors?.message, {
+          position: "top-center",
+          duration: 4000,
+        });
       }
     }
 
@@ -157,20 +135,22 @@ function FacultyStatus() {
           >
             <Navbar />
           </div>
-          <div className="flex flex-col justify-center w-full lg:w-[70vw] h-auto gap-5">
-            <div className="relative">
+          <div className="flex flex-col justify-center w-full md:w-[60vw] lg:w-[70vw] h-auto gap-5">
+            <div className="relative w-full lg:w-96">
               <input
                 className="p-2 w-full lg:w-96 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                 type="text"
                 name="search"
                 placeholder="Search Instructor"
                 value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)} // Handle search input
+                onChange={(event) => setSearchQuery(event.target.value)}
               />
-              <FontAwesomeIcon
-                className="text-xl text-black absolute left-[32.5%] top-[30%]"
-                icon={faMagnifyingGlass}
-              />
+              <div className="absolute inset-y-0 right-8 flex items-center">
+                <FontAwesomeIcon
+                  className="text-xl text-black absolute"
+                  icon={faMagnifyingGlass}
+                />
+              </div>
             </div>
             <div className="flex flex-col justify-center overflow-x-auto w-full lg:w-[70vw] h-auto gap-3">
               {Array.isArray(teacherData?.[1]) &&

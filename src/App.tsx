@@ -9,6 +9,7 @@ import ManageAccount from "./pages/ManageAccount";
 import SocketContextProvider from "./pages/contexts/SocketContext";
 import Consultationrecord from "./pages/Consultationrecord";
 import FacultyStatus from "./pages/FacultyStatus";
+import Notification from "./pages/Notification";
 
 function App() {
   return (
@@ -82,6 +83,14 @@ function App() {
             element={
               <SocketContextProvider>
                 <FacultyStatus />
+              </SocketContextProvider>
+            }
+          />
+          <Route
+            path="/notification"
+            element={
+              <SocketContextProvider>
+                <Notification />
               </SocketContextProvider>
             }
           />

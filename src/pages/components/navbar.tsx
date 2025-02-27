@@ -284,10 +284,6 @@ const Navbar: React.FC = () => {
                         />
                         <h1 className="text-lg font-bold">Notification</h1>
                       </div>
-
-                      <div className="bg-red-300 px-2 py-1 rounded-full">
-                        <h1 className="text-lg font-bold">0</h1>
-                      </div>
                     </div>
                   </Link>
                 </li>
