@@ -8,6 +8,8 @@ import Report from "./pages/Report";
 import ManageAccount from "./pages/ManageAccount";
 import SocketContextProvider from "./pages/contexts/SocketContext";
 import Consultationrecord from "./pages/Consultationrecord";
+import FacultyStatus from "./pages/FacultyStatus";
+import Notification from "./pages/Notification";
 
 function App() {
   return (
@@ -54,7 +56,7 @@ function App() {
                 <Consultationrecord />
               </SocketContextProvider>
             }
-          />          
+          />
         </Route>
 
         <Route element={<ProtectedRoutes requiredRoles={["admin"]} />}>
@@ -71,6 +73,24 @@ function App() {
             element={
               <SocketContextProvider>
                 <Report />
+              </SocketContextProvider>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoutes requiredRoles={["student"]} />}>
+          <Route
+            path="/faculty-status"
+            element={
+              <SocketContextProvider>
+                <FacultyStatus />
+              </SocketContextProvider>
+            }
+          />
+          <Route
+            path="/notification"
+            element={
+              <SocketContextProvider>
+                <Notification />
               </SocketContextProvider>
             }
           />
