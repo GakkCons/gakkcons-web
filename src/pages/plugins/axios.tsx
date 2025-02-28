@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const debug = true;
+const debug = false;
 
 export let backendURL: string;
 
