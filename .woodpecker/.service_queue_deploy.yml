@@ -6,14 +6,14 @@ steps:
         from_secret: SSH_HOST
       PROJECT_DIRECTORY:
         from_secret: PROJECT_DIRECTORY
-      WOODPECKER_SSH_KEY:
-        from_secret: WOODPECKER_SSH_KEY
+      SSH_KEY:
+        from_secret: SSH_KEY
       REGISTRY_IMAGE_TAG:
         from_secret: REGISTRY_IMAGE_TAG
     commands:
       - apk add openssh
       - mkdir -p /root/.ssh/
-      - echo "$WOODPECKER_SSH_KEY" | tr -d '\r' > /root/.ssh/id_rsa
+      - echo "$SSH_KEY" | tr -d '\r' > /root/.ssh/id_rsa
       - chmod 600 /root/.ssh/id_rsa
       - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > /root/.ssh/config
       - ssh "$SSH_HOST" "
