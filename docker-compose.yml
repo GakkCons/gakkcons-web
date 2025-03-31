@@ -10,3 +10,4 @@ services:
     ports:
       - "{PORT}:5173"
     command: npm run dev -- --host
+    restart: always
