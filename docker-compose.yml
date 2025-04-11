@@ -8,6 +8,6 @@ services:
       - .:/src
       - /src/node_modules
     ports:
-      - "{PORT}:5173"
+      - "${PORT}:5173"
     command: npm run dev -- --host
     restart: always
