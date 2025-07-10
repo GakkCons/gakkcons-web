@@ -37,4 +37,6 @@ steps:
 
 when:
   - branch: Main
-    event: push
+    event:
+      - push
+      - manual
