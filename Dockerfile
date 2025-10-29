@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/tmp/.npm \
     npm ci --save-dev --cache /tmp/.npm --prefer-offline
 
 RUN npm i -g serve
-RUN npm run build
+RUN vite build
 
 # Expose the port the app runs on
 EXPOSE 8000
