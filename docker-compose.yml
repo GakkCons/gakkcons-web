@@ -3,11 +3,7 @@ version: "3.8"
 services:
   frontend:
     build: .
-    working_dir: /src
-    volumes:
-      - .:/src
-      - /src/node_modules
     ports:
-      - "${PORT}:5173"
-    command: npm run dev -- --host
+      - "${PORT:-8000}:8000"
+    command: serve -s build -l 8000
     restart: always
