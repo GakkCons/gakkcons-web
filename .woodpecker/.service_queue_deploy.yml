@@ -11,6 +11,8 @@ steps:
       REGISTRY_IMAGE_TAG:
         from_secret: REGISTRY_IMAGE_TAG
     commands:
+      - mkdir -p /var/cache/apk
+      - ln -s /var/cache/apk /etc/apk/cache
       - apk add openssh
       - mkdir -p /root/.ssh/
       - echo "$SSH_KEY" | tr -d '\r' > /root/.ssh/id_rsa
@@ -22,6 +24,8 @@ steps:
         docker image rm "$REGISTRY_IMAGE_TAG" || true;
         git restore . && git pull origin "$CI_COMMIT_BRANCH";
         docker-compose up -d;"
+    volumes:
+      - /var/cache/apk:/var/cache/apk
   - name: discord
     image: appleboy/drone-discord
     settings:
