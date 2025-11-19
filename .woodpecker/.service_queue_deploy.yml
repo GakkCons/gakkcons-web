@@ -44,3 +44,5 @@ when:
     event:
       - push
       - manual
+
+skip_clone: true
