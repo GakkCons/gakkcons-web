@@ -1,6 +1,6 @@
 steps:
   - name: deploy
-    image: alpine:3.20
+    image: alpine:latest
     environment:
       SSH_HOST:
         from_secret: SSH_HOST
