@@ -38,7 +38,9 @@ steps:
           {{repo.name}} deployment #{{build.number}} {{build.status}}
         {{/success}}
     depends_on: deploy
-
+    when:
+      status: [ success, failure ]
+      
 when:
   - branch: Main
     event:
